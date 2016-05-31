@@ -1,0 +1,87 @@
+﻿@{ 
+    Layout = null;
+}
+<link href="~/assets/css/bootstrap-datepicker.min.css" rel="stylesheet" />
+
+<div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+    <h4 class="modal-title" id="myModalLabel"><i class="fa fa-credit-card"></i> Add Transaction </h4>
+</div>
+<div class="modal-body">
+    <table id="eTable" class="table table-bordered table-condensed table-striped">
+        <thead>
+            <tr>
+                <th class="col-xs-4">Description</th>
+                <th class="col-xs-2">Category</th>
+                <th class="col-xs-4">Transaction Date</th>
+                <th class="col-xs-2">Amount</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><input type="text" name="Description" class="form-control" placeholder="Add a description" required /></td>
+                <td>
+                    @Html.DropDownList("CategoryId", ViewBag.CategoryList as SelectList, new { @class = "form-control" })
+                </td>
+                <td>
+                    <div class="input-group date">
+                        <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
+                        <input type="text" class="form-control" name="TransactionDate" required>
+                    </div>
+                </td>
+                <td>
+                    <div class="input-group">
+                        <span class="input-group-addon"><i class="glyphicon glyphicon-usd"></i></span>
+                        <input type="number" class="form-control" step="0.01" min="0" name="Amount" placeholder="0.00" required>
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+<div class="modal-footer">
+    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+    <button id="table-submit" class="btn btn-primary pull-right" data-id="@Model.id">Add</button>
+</div>
+
+
+<script src="~/assets/js/bootstrap-datepicker.js"></script>
+<script>
+    $('.input-group.date').datepicker({
+        maxViewMode: 0,
+        todayHighlight: true
+    });
+
+    $('#table-submit').on("click", function () {
+        debugger;
+        var id = $(this).attr("data-id");
+        var transaction = {
+            AccountId: id,
+            Description: $("input[name=Description]").val(),
+            Amount: $("input[name=Amount]").val(),
+            CategoryId: $('#CategoryId').val(),
+            TransactionDate: $("input[name=TransactionDate]").val()
+        };
+
+        $.ajax({
+            type: "POST",
+            url: "/Household/AddTransaction",
+            data: transaction,
+            success: function (data) {
+                debugger;
+                if (data.success == false) {
+                    alert(data.errorMessage);
+                }
+                else {
+                    debugger;
+                    $('#loadtransactions').load('/Household/LoadTransactions/' + id, function () {
+                        $('#dataModal').modal('hide');
+                    });
+                }
+            },
+            error: function () {
+                alert("Post action failed");
+            }
+        });
+    });
+</script>

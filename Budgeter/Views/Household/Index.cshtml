@@ -1,0 +1,189 @@
+﻿@model Budgeter.Models.HouseholdCreateJoinMV
+@using Microsoft.AspNet.Identity;
+
+@{
+    if (Model.user.HouseholdId != null)
+    {
+        ViewBag.Title = "Household: " + Model.household.Name;
+    }
+    else
+    {
+        ViewBag.Title = "Household: Homeless";
+    }
+
+}
+
+@if (Model.user.HouseholdId == null)
+{
+        <div class="col-md-6 col-md-offset-3">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    Alert
+                </div>
+            <div class="panel-body">
+                <p>
+                    You are currently homeless. 
+                    Please create a new household
+                    @if (Model.user.PreviousHouseholdId != null)
+                    {
+                        <text>or press the "Previous Household" button to rejoin the last household you were a member of.</text>
+                    }
+                </p>
+                    <a href="@Url.Action("Create", "Household")" class="btn btn-primary pull-right" data-target="#displayModal" data-toggle="modal">Create</a>
+
+                @if (Model.user.PreviousHouseholdId != null)
+                {
+                    using (Html.BeginForm("RejoinHousehold", "Household", FormMethod.Post))
+                    {
+                    @Html.AntiForgeryToken()
+                    <button type="submit" class="btn btn-default pull-right">Previous Household</button>
+                    }
+                }
+                </div>
+            </div>
+        </div>
+}
+else
+{
+    <!--Household Details-->
+    <div class="col-md-9">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                Household: Details
+            </div>
+            <div class="panel-body">
+                <dl class="dl-horizontal">
+                    <dt>
+                        @Html.DisplayNameFor(model => model.household.Name)
+                    </dt>
+
+                    <dd>
+                        @Html.DisplayFor(model => model.household.Name)
+                    </dd>
+                    <dt>
+                        @Html.DisplayNameFor(model => model.household.Created)
+                    </dt>
+
+                    <dd>
+                        @Model.household.Created.ToString("d")
+                    </dd>
+                    <dt>
+                        Members
+                    </dt>
+
+                    <dd>
+                        @foreach (var user in Model.household.Users)
+                        {
+                            @user.FirstName<text>&nbsp</text>@user.LastName
+                            <br />
+                        }
+                    </dd>
+                </dl>
+                @if (Model.user.HouseholdId != null)
+                {
+                    <a href="@Url.Action("Leavehousehold", "Household")" class="btn btn-primary pull-right" data-target="#displayModal" data-toggle="modal">Leave Household</a>
+                }
+                else if (Model.user.PreviousHouseholdId != null)
+                {
+                    using (Html.BeginForm("RejoinHousehold", "Household", FormMethod.Post))
+                    {
+                        @Html.AntiForgeryToken()
+                        <button type="submit" class="btn btn-primary pull-right">Join Previous Household</button>
+                    }
+                }
+            </div>
+        </div>
+        <!--Household Accounts-->
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                Household: Accounts
+            </div>
+            <div class="panel-body">
+
+                <div id="loadaccount">
+                    @Html.Partial("_Accounts")
+                </div>
+
+                <i class="clearfix"></i>
+                <a href="@Url.Action("ReconcileAccount", "Household")" class="btn btn-default pull-left" data-target="#displayModal" data-toggle="modal">Reconcile Account</a>
+                <a href="@Url.Action("CreateAccount", "Household", new { id = Model.household.id })" class="btn btn-primary pull-right" data-target="#displayModal" data-toggle="modal">Add Account</a>
+            </div>
+        </div>
+    </div>
+    <!--Pending Member Invitations-->
+    <div class="col-md-3">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                Pending Member Invitations
+            </div>
+                <ul class="list-group">
+                    @if (ViewBag.Pending != null && ViewBag.Pending.Count > 0)
+                {
+                    foreach (var invitation in ViewBag.Pending)
+                    {
+                            <li class="list-group-item">@invitation.Email</li>
+                        }
+                    }
+                    else
+                    {
+                        <li class="list-group-item">None</li>
+                    }
+                </ul>
+            </div>
+        <!--Send Invitations-->
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                Send Invite
+            </div>
+            <div class="panel-body">
+                @using (Html.BeginForm())
+                {
+                    @Html.AntiForgeryToken()
+                    <span class="text-danger">@TempData["Error"]</span>
+                    <span class="text-success">@TempData["Success"]</span>
+                    <input type="hidden" name="id" value="@Model.household.id" />
+                    <input type="email" class="form-control col-md-8" name="email" style="margin-bottom: 10px" placeholder="example@email.com" required />
+                    <button type="submit" class="btn btn-primary pull-right col-md-4">Send</button>
+                }
+            </div>
+        </div>
+    </div>
+}
+
+<div class="modal fade" id="displayModal" tabindex="-1" role="dialog" aria-labelledby="displayModalLabel" aria-hidden="true" style="display: none;">
+    <div class="modal-dialog">
+        <div class="modal-content">
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="displayModalLabel" aria-hidden="true" style="display: none;">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                <h4 class="modal-title" id="myModalLabel"><i class="fa fa-home"></i> Account: </h4>
+            </div>
+            <div class="modal-body">
+                Are you sure you want to delete this account?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <input type="submit" value="Confirm" class="btn btn-primary" id="del"/>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section icon
+{
+    <i class="fa fa-home"></i>
+}
+
+@section scripts 
+{
+<script src="~/assets/js/mindmup-editabletable.js"></script>
+<script src="~/Scripts/moment.min.js"></script>
+<script src="~/assets/js/householdindex.js"></script>
+}

@@ -1,0 +1,22 @@
+﻿@model Budgeter.Models.Household
+
+@{
+    Layout = null;
+    ViewBag.Title = "Household: " + Model.Name;
+}
+
+<div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+        <h4 class="modal-title" id="myModalLabel"><i class="fa fa-home"></i> Household: @Model.Name</h4>
+    </div>
+    <div class="modal-body">
+        Are you sure you want to leave your household?
+    </div>
+    <div class="modal-footer">
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        <input type="submit" value="Confirm" class="btn btn-primary" /> 
+}
+    </div>

@@ -1,0 +1,72 @@
+﻿@model Budgeter.Models.Transactions
+
+@{
+    Layout = null;
+}
+
+<div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+    <h4 class="modal-title" id="myModalLabel">
+        @if (Model.Void == false)
+        {
+            <i class="fa fa-credit-card"></i> <text>Void Transaction: @Model.Description</text>
+        }
+        else
+        {
+            <i class="fa fa-credit-card"></i> <text>Un-Void Transaction: @Model.Description</text>
+}
+    </h4>
+</div>
+<div class="modal-body">
+    @if (Model.Void == false)
+    {
+        <text>Are you sure you want to void this transaction?</text>
+    }
+    else
+    {
+        <text>Are you sure you want to un-void this transaction?</text>
+    }
+</div>
+<div class="modal-footer">
+    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+    @if (Model.Void == false)
+    {
+        <button id="table-submit" class="btn btn-primary pull-right" data-id="@Model.id">Void</button>
+    }
+    else
+    {
+        <button id="table-submit" class="btn btn-primary pull-right" data-id="@Model.id">Un-Void</button>
+    }
+
+    <input type="hidden" name="AccountId" value="@Model.AccountId" />
+</div>
+
+<script>
+    $('#table-submit').on("click", function () {
+        debugger;
+        var transaction = {
+            id: $(this).attr("data-id")
+        };
+
+        $.ajax({
+            type: "POST",
+            url: "/Household/VoidTransaction",
+            data: transaction,
+            success: function (data) {
+                debugger;
+                if (data.success == false) {
+                    alert(data.errorMessage);
+                }
+                else {
+                    debugger;
+                    $('#loadtransactions').load('/Household/LoadTransactions/' + $("input[name=AccountId]").val(), function () {
+                        $('#dataModal').modal('hide');
+                    });
+                }
+            },
+            error: function () {
+                alert("Post action failed");
+            }
+        });
+    });
+</script>
