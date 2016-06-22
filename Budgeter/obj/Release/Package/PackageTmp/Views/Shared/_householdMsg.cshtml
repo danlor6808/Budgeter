@@ -1,0 +1,12 @@
+﻿@model Budgeter.Models.HouseholdCreateJoinMV
+
+@if (Model.household.Accounts.Any(u => u.Balance < 0))
+{
+    <div class="col-md-12">
+        <div id="show-warning" class="alert alert-danger" role="alert">
+            <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+            <span class="sr-only">Warning:</span>
+            There has been an overdraft in at least one of your accounts.
+        </div>
+    </div>
+}

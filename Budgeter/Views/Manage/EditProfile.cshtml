@@ -1,0 +1,67 @@
+﻿@model Budgeter.Models.IndexViewModel
+@{
+    ViewBag.Title = "Edit Personal Information";
+}
+@section icon
+{
+    <i class="fa fa-user"></i>
+}
+<div class="col-md-10 col-md-offset-1">
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            @if (TempData["Error"] != null)
+            { <p class="text-danger pull-right">@TempData["Error"]</p> }
+        </div>
+        <div class="panel-body">
+            @using (Html.BeginForm("ChangeDetails", "Manage", FormMethod.Post, new { @class = "form-horizontal", role = "form", enctype = "Multipart/form-data" }))
+            {
+                @Html.AntiForgeryToken()
+                @Html.ValidationSummary("", new { @class = "text-danger" })
+                <div class="form-group">
+                    @Html.LabelFor(m => m.DisplayName, new { @class = "col-sm-2 control-label" })
+                    <div class="col-sm-10">
+                        @Html.TextBoxFor(m => m.DisplayName, new { @class = "form-control", @required = "required" })
+                    </div>
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(m => m.FirstName, new { @class = "col-sm-2 control-label" })
+                    <div class="col-sm-10">
+                        @Html.TextBoxFor(m => m.FirstName, new { @class = "form-control", @required = "required" })
+                    </div>
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(m => m.LastName, new { @class = "col-sm-2 control-label" })
+                    <div class="col-sm-10">
+                        @Html.TextBoxFor(m => m.LastName, new { @class = "form-control", @required = "required" })
+                    </div>
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(m => m.PhoneNumber, new { @class = "col-sm-2 control-label" })
+                    <div class="col-sm-10">
+                        @Html.TextBoxFor(m => m.PhoneNumber, new { @class = "form-control", id = "phone", @required = "required" })
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-sm-2">Profile Icon</label>
+                    <div class="col-sm-10">
+                        <input type="file" id="image" name="image" class="form-control" accept="image/*">
+                        <small class="text-muted">For best results, please choose an image with dimension size 128 x 128</small>
+                    </div>
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(m => m.Password, new { @class = "col-sm-2 control-label" })
+                    <div class="col-sm-10">
+                        @*@Html.PasswordFor(m => m.Password, new { @class = "form-control" })*@
+                        <input class="form-control" type="Password" name="Password" id="Password" placeholder="Confirm Password" required />
+                        @Html.ValidationMessageFor(m => m.Password, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-offset-2 col-sm-10">
+                        <button type="submit" class="btn btn-danger">Submit</button>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>

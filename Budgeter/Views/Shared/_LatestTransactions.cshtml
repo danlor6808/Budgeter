@@ -1,0 +1,96 @@
+﻿@using System.Linq;
+
+<table id="t-table" class="table table-bordered table-condensed table-striped">
+    <thead>
+        <tr>
+            <th class="col-sm-2">Account</th>
+            <th class="col-sm-2">Description</th>
+            <th class="col-sm-1">Posted Date</th>
+            <th class="col-sm-1">Transaction Date</th>
+            <th class="col-sm-2">Category</th>
+            <th class="col-sm-1">Credit</th>
+            <th class="col-sm-1">Debit</th>
+            <th class="col-sm-1">Reconciled</th>
+            <th class="col-sm-1">Status</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (ViewBag.transactions != null)
+            {
+                foreach (var entry in ViewBag.transactions)
+                {
+                    if (entry.Void == true)
+                    {
+                        ViewBag.Void = "void";
+                    }
+                    else
+                    {
+                        ViewBag.Void = "";
+                    }
+                    if (entry.Balance < 0 && entry.Void == false)
+                    {
+                        ViewBag.overdraft = "danger";
+                    }
+                    else
+                    {
+                        ViewBag.overdraft = "";
+                    }
+                    <tr class="@ViewBag.Void @ViewBag.overdraft">
+                        <td><a href="@Url.Action("Transactions", "Household", new { id = entry.AccountId })">@entry.Account.Name</a></td>
+                        <td>@entry.Description</td>
+                        <td>@entry.Created.ToString("d")</td>
+                        <td>@entry.TransactionDate.ToString("d")</td>
+                        <td>@entry.Category.Name</td>
+                        <td>
+                            @if (@entry.Category.Expense == false)
+                            {
+                                <text>+</text> @entry.Amount
+                            }
+                        </td>
+                        <td>
+                            @if (@entry.Category.Expense == true)
+                            {
+                                <text>-</text> @entry.Amount
+                            }
+                        </td>
+                        <td style="text-align:center">
+                            @if (@entry.Reconciled == true)
+                            {
+                                <i class="fa fa-check text"></i>
+                            }
+                        </td>
+                        <td style="text-align:center">
+                            @{
+                                if (entry.Void == true)
+                                {
+                                    <label class="label label-default">Voided</label>
+                                }
+                                else if (entry.Category.Name.Contains("Reconciliation") == true && entry.Void == false)
+                                {
+                                    <label class="label label-info">Reconciled</label>
+                                }
+                                else if (entry.Balance < 0 && entry.Void == false)
+                                {
+                                    <label class="label label-danger">Overdraft</label>
+                                }
+                            }
+                        </td>
+                    </tr>
+                                    }
+                                }
+                                else
+                                {
+                                    <tr>
+                                        <td>No transactions made.</td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                    </tr>
+                                }
+    </tbody>
+</table>

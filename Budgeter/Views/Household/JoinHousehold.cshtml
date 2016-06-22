@@ -1,0 +1,40 @@
+﻿@model Budgeter.Models.Invitations
+@{
+    ViewBag.Title = ("Join Household: " + Model.Household.Name);
+}
+
+@if (ViewBag.StatusError != null)
+{
+    <div class="col-md-6 col-md-offset-3">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                Alert
+            </div>
+            <div class="panel-body">
+                <p class="text-danger">@ViewBag.StatusError</p>
+                <a href="@Url.Action("Index", "Household")" class="btn btn-primary pull-right">Back</a>
+            </div>
+        </div>
+    </div>
+
+}
+else
+{
+<div class="col-md-6 col-md-offset-3">
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            Please confirm
+        </div>
+        <div class="panel-body">
+            Are you sure you want to join this household?
+                @using (Html.BeginForm())
+                {
+                    @Html.HiddenFor(model => model.id);
+                    @Html.AntiForgeryToken()
+                    <button type="submit" class="btn btn-primary pull-right">Confirm</button>
+                    <a href="@Url.Action("Index", "Household")" class="btn btn-default pull-right">Cancel</a>
+                }
+        </div>
+    </div>
+</div>
+}

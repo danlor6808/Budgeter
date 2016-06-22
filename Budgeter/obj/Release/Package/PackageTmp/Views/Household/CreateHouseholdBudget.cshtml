@@ -1,0 +1,68 @@
+﻿@model Budgeter.Models.Budget
+
+@{
+    Layout = null;
+}
+<div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+    <h4 class="modal-title" id="myModalLabel"><i class="fa fa-credit-card"></i> Establish Household Budget </h4>
+</div>
+@using (Html.BeginForm())
+{
+<div class="modal-body">
+
+        @Html.AntiForgeryToken()
+    <input type="hidden" name="HouseholdId" value="@ViewBag.householdid" />
+    <table class="table table-bordered table-condensed table-striped">
+        <thead>
+            <tr>
+                <th class="col-sm-2">Description</th>
+                <th class="col-sm-2">Amount</th>
+                <th class="col-sm-2">Budget Type</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>@Html.EditorFor(model => model.Description, new { htmlAttributes = new { @class = "form-control", placeholder = "Description", required = "required" } })</td>
+                <td>
+                    <div class="input-group">
+                        <span class="input-group-addon"><i class="glyphicon glyphicon-usd"></i></span>
+                        <input type="number" class="form-control" step="0.01" min="0" name="Amount" placeholder="0.00" required>
+                    </div>
+                </td>
+                <td>
+                    @Html.RadioButtonFor(model => model.Expense, "false", new { id = "income", @checked = "true" })
+                    @Html.Label("income", "Income", new { @class = "expenseRadio" })
+                    <br />
+                    @Html.RadioButtonFor(model => model.Expense, "true", new { id = "expense" })
+                    @Html.Label("expense", "Expense", new { @class = "expenseRadio" })
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    </div>
+<div class="modal-footer">
+    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+    <input type="submit" value="Create" class="btn btn-primary" />
+</div>
+}
+
+<script>
+    $(document).on("change", "input[name=Amount]", function () {
+        var v = $(this).val(),
+            t = parseInt(v, 10),
+            b = isNaN(t);
+        if (b) {
+            $(this).val('');
+        }
+        else {
+            $(this).val(Math.abs(t));
+        }
+    });
+
+    $(document).on("keypress", "input[name=Amount]", function () {
+        if (event.which == 45 || event.which == 109 || event.which == 189) {
+            event.preventDefault();
+        }
+    });
+</script>

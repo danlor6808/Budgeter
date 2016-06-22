@@ -1,0 +1,71 @@
+﻿@model Budgeter.Models.IndexViewModel
+@{
+    ViewBag.Title = "Account Details";
+}
+
+
+    <div class="col-md-4">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="text-center">@ViewBag.DisplayName</h3>
+            </div>
+            <div class="panel-body">
+                <img src="@ViewBag.icon" class="img-circle display-center" />
+                <h4></h4>
+                @if (TempData["Success"] != null)
+            { <p class="text-success text-center">@TempData["Success"]</p> }
+            </div>
+            <div class="list-group">
+                <a href="@Url.Action("EditProfile","Manage")" class="list-group-item text-center">Edit Personal Information</a>
+                <a href="@Url.Action("ChangePassword","Manage")" class="list-group-item text-center">Change Password</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-8">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+            </div>
+            <div class="panel-body">
+
+                        ViewBag.DisplayName = user.DisplayName;
+                        ViewBag.FirstName = user.FirstName;
+                        ViewBag.Icon = user.Icon;
+                        ViewBag.LastName = user.LastName;
+                        ViewBag.Email
+            </div>
+        </div>
+    </div>
+
+
+<div class="col-md-12">
+    <div class="panel panel-default">
+        <div class="panel-heading text-center">
+            Latest Transactions Recorded
+        </div>
+        <div class="panel-body">
+            <div id="latestTransactions">
+                @Html.Action("_LatestTransactionsMade")
+            </div>
+        </div>
+    </div>
+</div>
+
+@section icon
+{
+    <i class="fa fa-user"></i>
+}
+
+@section scripts {
+@Scripts.Render("~/bundles/jqueryval")
+<script src="~/Scripts/jQuery-MaskedInput.js"></script>
+    <script>
+        $(document).ready(function () {
+            $("#phone").mask("(999) 999-9999");
+
+            $("#image").on("change", function () {
+
+
+            })
+        });
+    </script>
+}

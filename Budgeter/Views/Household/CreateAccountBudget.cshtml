@@ -1,0 +1,104 @@
+﻿@model Budgeter.Models.Account
+
+@{
+    Layout = null;
+}
+
+<div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+    <h4 class="modal-title" id="myModalLabel"><i class="fa fa-money"></i> @Model.Name : Create Budget</h4>
+</div>
+
+<input type="hidden" name="AccountId" value="@Model.id" />
+<div class="modal-body">
+    <div class="alert alert-warning" role="alert">
+        <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+        <span class="sr-only">Note:</span>
+        Please keep in mind that the budget "source" is shared among all members of the household.
+    </div>
+    <table class="table table-bordered table-condensed table-striped">
+        <thead>
+            <tr>
+                <th class="col-sm-2">Description</th>
+                <th class="col-sm-2">Balance</th>
+                <th class="col-sm-2">Source</th>
+                <th class="col-sm-2">Type</th>
+                <th class="col-sm-2">Transactions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><input type="text" class="form-control" name="Description" placeholder="Enter budget description." required /></td>
+                <td>
+                    <div class="input-group">
+                        <span class="input-group-addon"><i class="glyphicon glyphicon-usd"></i></span>
+                        <input type="number" class="form-control" step="0.01" min="0" name="Amount" placeholder="0.00" required>
+                    </div>
+                </td>
+                <td>@Html.DropDownList("SelectBudget", ViewBag.budgetlist as SelectList, "Personal", new { @class = "form-control" })</td>
+                <td>
+                    <input type="radio" checked="true" id="income" name="Expense" value="false" />
+                    @Html.Label("income", "Income", new { @class = "expenseRadio" })
+                    <br />
+                    <input type="radio" id="income" name="Expense" value="true" />
+                    @Html.Label("expense", "Expense", new { @class = "expenseRadio" })
+                </td>
+                <td>@Html.ListBox("SelectCategory", ViewBag.categorylist as MultiSelectList, new { required = "required" })</td>
+            </tr>
+        </tbody>
+    </table>
+    <div id="statusmsg" class="text-center">
+        <span class="text-danger errormsg"></span>
+    </div>
+</div>
+<div class="modal-footer">
+    <button type="button" class="btn btn-default pull-right" data-dismiss="modal">Close</button>
+    <button id="submitbudget" class="btn btn-primary pull-right" data-id="@Model.id">Create</button>
+</div>
+
+<script>
+    //Click event for adding data to table
+    $('#submitbudget').off('click').on("click", function () {
+        var budget = {
+            AccountId: $('input[name=AccountId]').val(),
+            Expense: $('input[name="Expense"]:checked').val(),
+            Description: $('input[name=Description]').val(),
+            Amount: $('input[name=Amount]').val(),
+            SelectBudget: $('#SelectBudget option:selected').val(),
+            SelectCategory: $('#SelectCategory').val()
+        };
+
+        $.ajax({
+            type: "POST",
+            url: "/Household/CreateAccountBudget/" + $('input[name=AccountId]').val(),
+            data: budget,
+            success: function (data) {
+                debugger;
+                if (data.success == false) {
+                    //alert(data.errorMessage);
+                    $('.errormsg').text(data.errorMessage);
+                }
+                else {
+                    //location.reload();
+                    $('#loadAccountBudget').load('/Household/_loadAccountBudget/' + @Model.id, function () {
+                        $('#loadChart').load('/Household/_loadAccountChart/' + @Model.id, function () {
+                            $('#dataModal').modal('hide');
+                        });
+                    });
+                }
+            },
+            error: function () {
+                alert("Post action failed");
+            }
+        });
+    });
+
+    $('#SelectBudget').on('change', function () {
+        if ($('#SelectBudget option:selected').val() != "") {
+            $('input[name=Expense]').attr('disabled', true)
+        }
+        else {
+            $('input[name=Expense]').attr('disabled', false)
+        }
+    });
+</script>

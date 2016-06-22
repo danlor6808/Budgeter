@@ -1,0 +1,175 @@
+﻿@model Budgeter.Models.AccountBudgetVM
+
+@{ 
+    decimal expense = 0;
+    decimal income = 0;
+}
+<div class="tab-content">
+    <div class="tab-pane fade in active" id="budgetExpense">
+        @if (Model.Account.AccountBudget.Where(u => u.Expense == true).Count() > 0)
+        {
+            <table class="table table-bordered table-condensed table-striped">
+                <thead>
+                    <tr>
+                        <th class="col-sm-7">
+                            Budget
+                        </th>
+                        <th class="col-sm-3">
+                            Amount
+                        </th>
+                        <th>
+                            Leftover
+                        </th>
+                        <th class="col-sm-2">
+                            Action
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var n in Model.Account.AccountBudget.Where(u => u.Expense == true))
+                    {
+                        foreach (var x in Model.List)
+                        {
+                            if (x.id == n.id)
+                            {
+                                decimal amt = n.Amount;
+                                expense = amt + x.value;
+                            }
+                        }
+                        if (expense < 0)
+                        {
+                            ViewBag.overbudget = "danger";
+                        }
+                        else
+                        {
+                            ViewBag.overbudget = "";
+                        }
+                        <tr class="expensebudget @ViewBag.overbudget">
+                            <td>
+                                @n.Description @if (expense < 0)
+                                { <text><span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span></text> }
+                            </td>
+                            <td>
+                                $@n.Amount
+                            </td>
+                            <td>
+                                @*@n.Leftover*@
+                                $@expense
+                            </td>
+                            <td>
+                                <a href="@Url.Action("EditAccountBudget", "Household", new { id = n.id })" data-target="#dataModal" data-toggle="modal"><i class="fa fa-edit"></i></a>
+                                <a href="@Url.Action("DeleteAccountBudget", "Household", new { id = n.id })" data-target="#dataModal" data-toggle="modal"><i class="fa fa-trash"></i></a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+        </div>
+    <div class="tab-pane fade in" id="budgetIncome">
+        @if (Model.Account.AccountBudget.Where(u => u.Expense == false).Count() > 0)
+        {
+            <table class="table table-bordered table-condensed table-striped">
+                <thead>
+                    <tr>
+                        <th class="col-sm-4">
+                            Budget
+                        </th>
+                        <th class="col-sm-3">
+                            Goal
+                        </th>
+                        <th class="col-sm-3">
+                            Collected
+                        </th>
+                        <th class="col-sm-2">
+                            Action
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var n in Model.Account.AccountBudget.Where(u => u.Expense == false))
+                {
+                    foreach (var x in Model.List)
+                    {
+                        if (x.id == n.id)
+                        {
+                            decimal amt = n.Amount;
+                            income = x.value;
+                        }
+                    }
+                    if (income > n.Amount)
+                    {
+                        ViewBag.goal = "success";
+                    }
+                    else if (income < 0)
+                    {
+                        ViewBag.goal = "danger";
+                    }
+                    else
+                    {
+                        ViewBag.goal = "";
+                    }
+                    <tr class="incomebudget @ViewBag.goal">
+                        <td>
+                            @n.Description
+                        </td>
+                        <td>
+                            $@n.Amount
+                        </td>
+                        <td>
+                            $@income
+                        </td>
+                        <td>
+                            <a href="@Url.Action("EditAccountBudget", "Household", new { id = n.id })" data-target="#dataModal" data-toggle="modal"><i class="fa fa-edit"></i></a>
+                            <a href="@Url.Action("DeleteAccountBudget", "Household", new { id = n.id })" data-target="#dataModal" data-toggle="modal"><i class="fa fa-trash"></i></a>
+                        </td>
+                    </tr>
+                    }
+                </tbody>
+            </table>
+        }
+        </div>
+    </div>
+
+    @if (Model.Account.Balance < 0)
+    {
+        <script>
+            $.notify({
+                // options
+                message: "Uh Oh! Your account is currently in overdraft."
+            }, {
+                // settings
+                type: 'danger'
+            });
+        </script>
+    }
+
+    <script>
+        if ($('tr.expensebudget').hasClass('danger')) {
+            $.notify({
+                // options
+                message: "Uh Oh! It seems you've went and gone over the one of your budget amounts."
+            }, {
+                // settings
+                type: 'danger'
+            });
+        }
+        if ($('tr.incomebudget').hasClass('success')) {
+            $.notify({
+                // options
+                message: "Congratulations! You've met one of your budget goals!"
+            }, {
+                // settings
+                type: 'success'
+            });
+        }
+        if ($('tr.incomebudget').hasClass('danger')) {
+            $.notify({
+                // options
+                message: "Uh Oh! It seems you've went and gone under the amount of money needed to reach one of your goals."
+            }, {
+                // settings
+                type: 'danger'
+            });
+        }
+    </script>

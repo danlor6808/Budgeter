@@ -1,0 +1,12 @@
+﻿@model Budgeter.Models.Account
+<div class="panel panel-default">
+    <div class="panel-heading text-center">
+        Account Details
+    </div>
+    <ul class="list-group">
+        <li class="list-group-item"><h4>Balance<span class="label label-primary pull-right">$@Model.Balance</span></h4></li>
+        <li class="list-group-item"><h4>Total Income<span class="label label-success pull-right">$@ViewBag.income</span></h4></li>
+        <li class="list-group-item"><h4>Total Expense<span class="label label-danger pull-right">$@ViewBag.expense</span></h4></li>
+        <li class="list-group-item"><h4>Total Reconciled<span class="label label-warning pull-right">$@ViewBag.reconciled</span></h4></li>
+    </ul>
+</div>

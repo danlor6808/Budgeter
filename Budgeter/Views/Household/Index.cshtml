@@ -1,0 +1,248 @@
+﻿@model Budgeter.Models.HouseholdCreateJoinMV
+@using Microsoft.AspNet.Identity;
+
+@{
+    if (Model.user.HouseholdId != null)
+    {
+        ViewBag.Title = "Household: " + Model.household.Name;
+    }
+    else
+    {
+        ViewBag.Title = "Household: Homeless";
+    }
+
+}
+
+@if (Model.user.HouseholdId == null)
+{
+        <div class="col-md-6 col-md-offset-3">
+            <div class="panel panel-default">
+                <div class="panel-heading panel-danger">
+                    Alert
+                </div>
+            <div class="panel-body">
+                <p>
+                    You are currently homeless. 
+                    Please create a new household
+                    @if (Model.user.PreviousHouseholdId != null)
+                    {
+                        <text>or press the "Previous Household" button to rejoin the last household you were a member of.</text>
+                    }
+                </p>
+                    <a href="@Url.Action("Create", "Household")" class="btn btn-primary pull-right" data-target="#displayModal" data-toggle="modal">Create</a>
+
+                @if (Model.user.PreviousHouseholdId != null)
+                {
+                    using (Html.BeginForm("RejoinHousehold", "Household", FormMethod.Post))
+                    {
+                    @Html.AntiForgeryToken()
+                    <button type="submit" class="btn btn-default pull-right">Previous Household</button>
+                    }
+                }
+                </div>
+            </div>
+        </div>
+}
+else
+{
+    @*<div id="householdmsg">
+        @Html.Action("_householdMsg", new { id = Model.household.id })
+    </div>*@
+    <!--Household Details-->
+        <div class="col-md-4">
+            <div class="panel panel-default">
+                <div class="panel-heading text-center">
+                    Household Details
+                </div>
+                <div class="panel-body">
+                    <dl class="dl-horizontal">
+                        <dt>
+                            @Html.DisplayNameFor(model => model.household.Name)
+                        </dt>
+
+                        <dd>
+                            @Html.DisplayFor(model => model.household.Name)
+                        </dd>
+                        <dt>
+                            Members
+                        </dt>
+                        <dd>
+                            @foreach (var user in Model.household.Users)
+                            {
+                                @user.FirstName<text>&nbsp</text>@user.LastName
+                                <br />
+                            }
+                        </dd>
+                    </dl>
+                    <a href="@Url.Action("Leavehousehold", "Household")" class="btn btn-primary center-block" data-target="#displayModal" data-toggle="modal">Leave Household</a>
+                </div>
+            </div>
+            <div class="panel panel-default">
+                <div class="panel-heading text-center">
+                    Household Budgets
+                </div>
+                <div class="panel-body">
+                    <div id="loadBudget">
+                        @Html.Action("_loadBudget", new { id = Model.household.id })
+                    </div>
+                    <a href="@Url.Action("CreateHouseholdBudget", "Household" , new { id=Model.household.id })" class="btn btn-primary center-block" data-target="#displayModal" data-toggle="modal">Create Budget</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-8">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <ul class="nav nav-pills">
+                        <li class="active">
+                            <a href="#home" data-toggle="tab" data-identifier="Line"><i class="fa fa-calendar-o"></i></a>
+                        </li>
+                        <li class="">
+                            <a href="#profile" data-toggle="tab" data-identifier="Bar"><i class="fa fa-calendar"></i></a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="panel-body">
+                    <div class="tab-content">
+                        <div class="tab-pane fade in active" id="home">
+                            <h4 class="text-center">Household Annual Income</h4>
+                            <div id="chart" style="height: 300px">
+
+                            </div>
+                        </div>
+                        <div class="tab-pane fade" id="profile">
+                            <h4 class="text-center">Household Annual Expense</h4>
+                            <div id="chart2" style="height: 300px">
+
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="loadaccount">
+            @Html.Partial("_Accounts")
+        </div>
+        <div class="col-md-12">
+            <div class="panel panel-default">
+                <div class="panel-heading text-center">
+                    Last 5 Transactions
+                </div>
+                <div class="panel-body">
+                    <div id="latestTransactions">
+                        @Html.Action("_LatestTransactions", new { id = Model.household.id })
+                    </div>
+                </div>
+            </div>
+        </div>
+}
+
+<div class="modal fade" id="displayModal" tabindex="-1" role="dialog" aria-labelledby="displayModalLabel" aria-hidden="true" style="display: none;">
+    <div class="modal-dialog">
+        <div class="modal-content">
+        </div>
+    </div>
+</div>
+
+@section icon
+{
+    <i class="fa fa-home"></i>
+}
+
+@section css
+{
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/morris.js/0.5.1/morris.css">
+    <link href="~/assets/css/animate.css" rel="stylesheet" />
+}
+
+@section scripts 
+{
+<script src="~/assets/js/mindmup-editabletable.js"></script>
+<script src="~/Scripts/moment.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/raphael/2.1.0/raphael-min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/morris.js/0.5.1/morris.min.js"></script>
+<script src="~/assets/js/bootstrap-notify.min.js"></script>
+    @if (Model.user.HouseholdId != null)
+    {
+        <script>
+            debugger;
+            var data;
+            $.post('@Url.Action("GetBarChart", "Home")').then(function (response) {
+               data = response;
+               //barChart = Morris.Bar({
+               //         element: 'chart',
+               //         data: response[0].data,
+               //         xkey: 'name',
+               //         ykeys: ['income', 'expense'],
+               //         labels: ['Total Income', 'Total Expense'],
+               //         xLabelMargin: 10,
+               //         hideHover: true,
+               //         resize: true
+               //});
+
+               barChart = Morris.Line({
+                   element: 'chart',
+                   data: response[0].data,
+                   xkey: 'month',
+                   ykeys: ['value'],
+                   labels: ['Amount made'],
+                   preUnits: '$',
+                   postUnits: '.00',
+                   resize: true,
+                   hideHover: true,
+                   parseTime: false,
+                   xLabelMargin: 10,
+                   xLabelAngle: 25,
+                   lineColors: ['#5cb85c'],
+                   pointFillColors: ['#3c763d']
+               });
+
+               barChart2 = Morris.Line({
+                   element: 'chart2',
+                   data: response[0].data2,
+                   xkey: 'month',
+                   ykeys: ['value'],
+                   labels: ['Amount spent'],
+                   preUnits: '-$',
+                   postUnits: '.00',
+                   resize: true,
+                   hideHover: true,
+                   parseTime: false,
+                   xLabelMargin: 10,
+                   xLabelAngle: 25,
+                   lineColors: ['#d9534f'],
+                   pointFillColors: ['#a94442']
+               });
+            });
+
+
+            $('ul.nav a').on('shown.bs.tab', function (e) {
+                barChart.redraw();
+                barChart2.redraw();
+            });
+
+
+            $(window).on('resize', function () {
+                barChart.setData(data[0].data);
+            });
+
+            $(window).on('resize', function () {
+                barChart2.setData(data[1].data2);
+            });
+
+        </script>
+    }
+
+@if (Model.household.Accounts.Any(u => u.Balance < 0))
+    {
+    <script>
+            $.notify({
+            // options
+            message: "Uh Oh! You have an account that is currently in overdraft."
+            }, {
+            // settings
+            type: 'danger'
+            });
+    </script>
+}
+}

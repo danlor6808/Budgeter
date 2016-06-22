@@ -1,0 +1,128 @@
+﻿@model Budgeter.Models.AccountBudget
+
+@{
+    Layout = null;
+}
+
+<div class="modal-header">
+    <input type="hidden" name="id" value="@Model.id" />
+    <input type="hidden" name="aid" value="@Model.AccountId" />
+    <h4 class="modal-title" id="myModalLabel"><i class="fa fa-trash"></i> Edit Budget : @Model.Description </h4>
+</div>
+<div class="modal-body">
+    <table class="table table-bordered table-condensed table-striped">
+        <thead>
+            <tr>
+                <th class="col-sm-3">
+                    Budget
+                </th>
+                <th class="col-sm-2">
+                    Amount
+                </th>
+                <th class="col-sm-2">
+                    Source
+                </th>
+                <th class="col-sm-2">
+                    Type
+                </th>
+                <th class="col-sm-3">
+                    Transactions
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>
+                    <input type="text" class="form-control" name="Description" value="@Model.Description" required />
+                </td>
+                <td>
+                    <div class="input-group">
+                        <span class="input-group-addon"><i class="glyphicon glyphicon-usd"></i></span>
+                        <input type="number" class="form-control" step="0.01" min="0" name="Amount" value="@Model.Amount" required>
+                    </div>
+                </td>
+                <td>@Html.DropDownList("SelectBudget", ViewBag.budgetlist as SelectList, null, new { @class = "form-control" })</td>
+                <td>
+                    @if (Model.Expense == true)
+                    {
+                        <input type="radio" id="income" name="Expense" value="false" />
+                        @Html.Label("income", "Income", new { @class = "expenseRadio" })
+                        <br />
+                        <input type="radio" id="income" checked="true"  name="Expense" value="true" />
+                        @Html.Label("expense", "Expense", new { @class = "expenseRadio" })
+                    }
+                    else
+                    {
+                        <input type="radio" checked="true" id="income" name="Expense" value="false" />
+                        @Html.Label("income", "Income", new { @class = "expenseRadio" })
+                        <br />
+                        <input type="radio" id="income" name="Expense" value="true" />
+                        @Html.Label("expense", "Expense", new { @class = "expenseRadio" })
+                    }
+                </td>
+                <td>@Html.ListBox("SelectCategory", ViewBag.categorylist as MultiSelectList, new { required = "required" })</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+<div class="modal-footer">
+    <button type="button" class="btn btn-primary edit">Submit Changes</button>
+    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+</div>
+
+<script>
+    $(document).ready(function () {
+        if ($('#SelectBudget option:selected').val() != "") {
+            $('input[name=Expense]').attr('disabled', true)
+        }
+        else {
+            $('input[name=Expense]').attr('disabled', false)
+        }
+    })
+
+    //Click event for adding data to table
+    $('.edit').on("click", function () {
+        var id = $('input[name=id]').val();
+        var aid = $('input[name=aid]').val();
+        var budget = {
+            id: id,
+            Description: $('input[name=Description]').val(),
+            Amount: $('input[name=Amount]').val(),
+            AccountId: aid,
+            Expense: $('input[name="Expense"]:checked').val(),
+            SelectBudget: $('#SelectBudget option:selected').val(),
+            SelectCategory: $('#SelectCategory').val()
+        };
+
+        $.ajax({
+            type: "POST",
+            url: "/Household/EditAccountBudget",
+            data: budget,
+            success: function (data) {
+                debugger;
+                if (data.success == false) {
+                    alert(data.errorMessage);
+                }
+                else {
+                    $('#loadAccountBudget').load('/Household/_loadAccountBudget/' + @Model.AccountId, function () {
+                        $('#loadChart').load('/Household/_loadAccountChart/' + @Model.AccountId, function () {
+                            $('#dataModal').modal('hide');
+                        });
+                    });
+                }
+            },
+            error: function () {
+                alert("Post action failed");
+            }
+        });
+    });
+
+    $('#SelectBudget').on('change', function () {
+        if ($('#SelectBudget option:selected').val() != "" || $('#SelectBudget option:selected').val() != "0") {
+            $('input[name=Expense]').attr('disabled', true)
+        }
+        else {
+            $('input[name=Expense]').attr('disabled', false)
+        }
+    });
+</script>

@@ -1,0 +1,199 @@
+﻿@model Budgeter.Models.Account
+
+@{
+    ViewBag.Title = Model.Name + ": Account Details";
+}
+
+@section icon
+{
+    <i class="fa fa-credit-card"></i>
+}
+<div class="col-md-4">
+    <div id="loadDetails">
+            @Html.Action("_loadDetails", new { id = Model.id })
+        </div>
+    <div class="panel panel-default">
+        <div class="panel-heading text-center">
+            <ul class="nav nav-pills">
+                <li class="active">
+                    <a href="#budgetExpense" data-toggle="tab" data-target="#budgetExpense, #budgetExpense_chart"><i class="fa fa-bar-chart"></i></a>
+                </li>
+                <li class="">
+                    <a href="#budgetIncome" data-toggle="tab" data-target="#budgetIncome, #budgetIncome_chart"><i class="fa fa-bar-chart-o"></i></a>
+                </li>
+            </ul>
+        </div>
+        <div class="panel-body">
+                <div id="loadAccountBudget">
+                    @Html.Action("_loadAccountBudget", new { id = Model.id })
+                </div>
+            <a href="@Url.Action("CreateAccountBudget","Household", new { id = Model.id })" data-toggle="modal" data-target="#dataModal" class="btn btn-primary center-block">Create Budget</a>
+        </div>
+    </div>
+</div>
+
+<div class="col-md-8">
+    <div class="panel panel-default">
+        <div class="panel-heading text-center">
+            Account Overview
+        </div>
+        <div class="panel-body">
+            <div id="loadChart">
+                @Html.Action("_loadAccountChart", Model.id)
+            </div>
+        </div>
+    </div>
+</div>
+<div class="col-md-12">
+    <div id="loadtransactions">
+        @Html.Partial("_Transactions")
+    </div>
+</div>
+<div class="modal fade" id="dataModal" tabindex="-1" role="dialog" aria-labelledby="displayModalLabel" aria-hidden="true" style="display: none;">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content" id="loadhere">
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="confirmModal" tabindex="-1" role="dialog" aria-labelledby="displayModalLabel" aria-hidden="true" style="display: none;">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content" id="loadhere">
+        </div>
+    </div>
+</div>
+
+@section css
+{
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/morris.js/0.5.1/morris.css">
+<link href="~/assets/css/animate.css" rel="stylesheet" />
+}
+
+@section scripts
+{
+<script src="https://cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js"></script>
+<script src="~/assets/js/datatables.bootstrap.min.js"></script>
+<script src="~/Scripts/moment.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/raphael/2.1.0/raphael-min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/morris.js/0.5.1/morris.min.js"></script>
+<script src="~/assets/js/bootstrap-notify.min.js"></script>
+<script>
+    $(function () {
+        $('#t-table').DataTable({
+            "bSort":false,
+            "paging": true,
+            "lengthChange": false,
+            "searching": false,
+            "info": true,
+            "autoWidth": false
+        });
+
+        $('body').on('hidden.bs.modal', '.modal', function () {
+            $(this).removeData('bs.modal');
+        });
+
+        $(document).on("change", "input[name=Amount]", function () {
+            var v = $(this).val(),
+                t = parseInt(v, 10),
+                b = isNaN(t);
+            if (b) {
+                $(this).val('');
+            }
+            else {
+                $(this).val(Math.abs(t));
+            }
+        });
+
+        $(document).on("keypress", "input[name=Amount]", function () {
+            if (event.which == 45 || event.which == 109 || event.which == 189) {
+                event.preventDefault();
+            }
+        });
+
+        $("#confirmModal").on('hidden.bs.modal', function (event) {
+            if ($('.modal:visible').length) //check if any modal is open
+            {
+                $('body').addClass('modal-open');//add class to body
+            }
+        });
+
+        $.post('@Url.Action("GetAccountBarChart", "Home", new { id = Model.id })').then(function (response) {
+            debugger;
+            data = response;
+            barChart = Morris.Bar({
+                element: 'chart',
+                data: response[0].data,
+                xkey: 'name',
+                ykeys: ['total', 'baseAmount', 'leftover'],
+                labels: ['Total Amount Spent', 'Budgeted Amount', 'Leftover'],
+                xLabelMargin: 10,
+                hideHover: true,
+                preUnits: '$',
+                postUnits: '.00'
+            });
+
+            barChart2 = Morris.Bar({
+                element: 'chart2',
+                data: response[0].data2,
+                xkey: 'name',
+                ykeys: ['total', 'baseAmount', 'leftover'],
+                labels: ['Collected', 'Goal', 'Left to go'],
+                xLabelMargin: 10,
+                hideHover: true,
+                preUnits: '$',
+                postUnits: '.00'
+            });
+        });
+
+        $(window).on('resize', function () {
+            barChart.setData(data[0].data);
+            barChart2.setData(data[0].data2);
+        });
+
+        $('ul.nav a').on('shown.bs.tab', function (e) {
+            barChart.redraw();
+            barChart2.redraw();
+        });
+
+        if ($('tr.expensebudget').hasClass('danger')) {
+            $.notify({
+                // options
+                message: "Uh Oh! It seems you've went and gone over the one of your budget amounts."
+            }, {
+                // settings
+                type: 'danger'
+            });
+        }
+        if ($('tr.incomebudget').hasClass('success')) {
+            $.notify({
+                // options
+                message: "Congratulations! You've met one of your budget goals!"
+            }, {
+                // settings
+                type: 'success'
+            });
+        }
+        if ($('tr.incomebudget').hasClass('danger')) {
+            $.notify({
+                // options
+                message: "Uh Oh! It seems you've went and gone under the amount of money needed to reach one of your goals."
+            }, {
+                // settings
+                type: 'danger'
+            });
+        }
+    });
+</script>
+    @if (Model.Balance < 0)
+    {
+        <script>
+            $.notify({
+            // options
+            message: "Uh Oh! Your account is currently in overdraft."
+            }, {
+            // settings
+            type: 'danger'
+            });
+        </script>
+    }
+}

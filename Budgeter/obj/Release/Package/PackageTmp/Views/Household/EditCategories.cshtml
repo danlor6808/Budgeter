@@ -1,0 +1,22 @@
+﻿@model  IEnumerable<Budgeter.Models.Category>
+@{ 
+    Layout = null;
+}
+<input type="hidden" name="aid" value="@ViewBag.AccountId" />
+<div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+    <h4 class="modal-title" id="myModalLabel"><i class="fa fa-edit"></i> Edit Categories </h4>
+    <h5 class="Msg-success text-center text-success"></h5>
+    <h5 class="Msg-danger text-center text-danger"></h5>
+</div>
+<div class="modal-body">
+    <button type="button" class="btn btn-primary pull-right addCategory">Add Category</button>
+    <br class="clearfix" />
+<div id="loadTable">
+    @Html.Partial("_LoadCategories")
+</div>
+</div>
+<div class="modal-footer">
+    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+</div>
+

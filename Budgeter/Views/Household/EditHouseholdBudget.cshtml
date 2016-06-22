@@ -1,0 +1,72 @@
+﻿@model Budgeter.Models.Budget
+
+@{
+    Layout = null;
+}
+
+<div class="modal-header">
+    <input type="hidden" name="id" value="@Model.id" />
+    <input type="hidden" name="hid" value="@Model.HouseholdId" />
+    <h4 class="modal-title" id="myModalLabel"><i class="fa fa-trash"></i> Edit Budget : @Model.Description </h4>
+</div>
+<div class="modal-body">
+    <table class="table table-bordered table-condensed table-striped">
+        <thead>
+            <tr>
+                <th class="col-sm-7">
+                    Budget
+                </th>
+                <th class="col-sm-3">
+                    Amount
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>
+                    <input type="text" class="form-control" name="Description" value="@Model.Description" required />
+                </td>
+                <td>
+                    <input type="number" class="form-control" name="Amount" value="@Model.Amount" required />
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+<div class="modal-footer">
+    <button type="button" class="btn btn-primary edit">Submit Changes</button>
+    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+</div>
+
+<script>
+    //Click event for adding data to table
+    $('.edit').on("click", function () {
+        var id = $('input[name=id]').val();
+        var hid = $('input[name=hid]').val();
+        var budget = {
+            id: id,
+            Description: $('input[name=Description]').val(),
+            Amount: $('input[name=Amount]').val(),
+        };
+
+        $.ajax({
+            type: "POST",
+            url: "/Household/EditHouseholdBudget",
+            data: budget,
+            success: function (data) {
+                debugger;
+                if (data.success == false) {
+                    alert(data.errorMessage);
+                }
+                else {
+                    $('#loadBudget').load('/Household/_loadBudget/' + hid, function () {
+                        $('#displayModal').modal('hide');
+                    });
+                }
+            },
+            error: function () {
+                alert("Post action failed");
+            }
+        });
+    });
+</script>

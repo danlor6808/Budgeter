@@ -1,0 +1,80 @@
+﻿@model Budgeter.Models.HouseholdCreateJoinMV
+@using Microsoft.AspNet.Identity;
+
+<div class="col-md-12">
+    <div class="panel panel-default">
+        <div class="panel-heading text-center">
+            Household Accounts
+        </div>
+        <div class="panel-body">
+            <div id="loadaccount">
+                <table class="table table-bordered table-condensed table-striped">
+                    <thead>
+                        <tr>
+                            <th>Account Name</th>
+                            <th>Current Balance</th>
+                            <th>Reconciled</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.household.Accounts.Count > 0)
+                        {
+                            foreach (var account in Model.household.Accounts.Where(u => u.isDeleted == false))
+                            {
+                                if (account.Balance < 0)
+                                {
+                                    ViewBag.overdraft = "danger";
+                                }
+                                else
+                                {
+                                    ViewBag.overdraft = "";
+                                }
+                                <tr class="@ViewBag.overdraft">
+                                    <td>@account.Name</td>
+                                    <td>@account.Balance</td>
+                                    <td>
+                                        @{
+                                            var rDate = account.ReconcileDate.LastOrDefault();
+                                            if (rDate != null)
+                                            {
+                                                @rDate.date.ToString("d")
+                                            }
+
+                                        }
+                                    </td>
+                                    <td>
+                                        @if (account.Balance < 0)
+                                        {
+                                            <label class="label label-danger">Overdraft</label>
+                                        }
+                                    </td>
+                                    <td>
+                                        <a href="@Url.Action("EditAccount", "Household", new { account.id })" data-target="#displayModal" data-toggle="modal"><i class="fa fa-edit"></i></a>
+                                        <a href="@Url.Action("Transactions", "Household", new { account.id })" class="transaction"><i class="fa fa-eye"></i></a>
+                                        <a href="@Url.Action("DeleteAccount", "Household", new { account.id })" data-target="#displayModal" data-toggle="modal"><i class="fa fa-trash"></i></a>
+                                    </td>
+                                </tr>
+                                                }
+                                            }
+                                            else
+                                            {
+                                                <tr>
+                                                    <td>
+                                                        There are no accounts available.
+                                                    </td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+                                                </tr>
+                                            }
+                    </tbody>
+                </table>
+            </div>
+            <i class="clearfix"></i>
+            @*<a href="@Url.Action("ReconcileAccount", "Household")" class="btn btn-default center-block" data-target="#displayModal" data-toggle="modal">Reconcile Account</a>*@
+            <a href="@Url.Action("CreateAccount", "Household", new { id = Model.household.id })" class="btn btn-primary center-block" data-target="#displayModal" data-toggle="modal">Add Account</a>
+        </div>
+    </div>
+</div>

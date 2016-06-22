@@ -1,0 +1,104 @@
+﻿@model Budgeter.Models.HouseholdBudgetVM
+
+@{ 
+    decimal amount = 0;
+}
+
+@if (Model.Household.Budgets.Count() > 0)
+{
+<table class="table table-bordered table-condensed table-striped">
+    <thead>
+        <tr>
+            <th class="col-sm-4">
+                Budget
+            </th>
+            <th class="col-sm-3">
+                Amount
+            </th>
+            <th class="col-sm-3">
+                Share
+            </th>
+            <th class="col-sm-2">
+                Action
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var n in Model.Household.Budgets)
+        {
+            foreach (var x in Model.List)
+            {
+                if (x.id == n.id)
+                {
+                    amount = x.value;
+                }
+            }
+            if (amount < 0)
+            {
+                ViewBag.neg = "danger";
+            }
+            <tr class="ViewBag.neg">
+                <td>
+                    @n.Description
+                </td>
+                <td>
+                    $@n.Amount
+                </td>
+                <td>
+                    $@amount
+                </td>
+                <td>
+                    <a href="@Url.Action("EditHouseholdBudget", "Household", new { id = n.id })" data-target="#displayModal" data-toggle="modal"><i class="fa fa-edit"></i></a>
+                    <a href="@Url.Action("DeleteHouseholdBudget", "Household", new { id = n.id })" data-target="#displayModal" data-toggle="modal"><i class="fa fa-trash"></i></a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+}
+
+@*@if (Model.Budgets.Where(u => u.Expense == false).Count() > 0)
+{
+<table class="table table-bordered table-condensed table-striped">
+    <thead>
+        <tr>
+            <th class="col-sm-5">
+                Budget
+            </th>
+            <th class="col-sm-3">
+                Goal
+            </th>
+            <th class="col-sm-3">
+                Collected
+            </th>
+            <th class="col-sm-2">
+                Action
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var n in Model.Budgets.Where(u => u.Expense == false))
+        {
+            if (n.Leftover < 0)
+            {
+                ViewBag.neg = "danger";
+            }
+            <tr class="ViewBag.neg">
+                <td>
+                    @n.Description
+                </td>
+                <td>
+                    $@n.Amount
+                </td>
+                <td>
+                    $@n.Collected
+                </td>
+                <td>
+                    <a href="@Url.Action("EditHouseholdBudget", "Household", new { id = n.id })" data-target="#displayModal" data-toggle="modal"><i class="fa fa-edit"></i></a>
+                    <a href="@Url.Action("DeleteHouseholdBudget", "Household", new { id = n.id })" data-target="#displayModal" data-toggle="modal"><i class="fa fa-trash"></i></a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+}*@

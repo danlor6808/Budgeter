@@ -1,0 +1,18 @@
+﻿@model Budgeter.Models.Account
+<div id="MyChart" style="height:200px">
+</div>
+
+<script>
+    var chartData;
+        $.post('@Url.Action("GetChart", "Home", new { id = Model.id})').then(function (response) {
+            donutChart = Morris.Donut({
+                element: 'MyChart',
+                data: response
+            });
+            chartData = response;
+        });
+
+        $(window).on('resize', function () {
+            donutChart.setData(chartData);
+        });
+</script>

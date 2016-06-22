@@ -1,0 +1,153 @@
+﻿@model Budgeter.Models.Account
+
+@{ 
+
+}
+
+<div class="panel panel-default">
+    <div class="panel-heading">
+        Transactions
+        <a href="@Url.Action("EditCategories","Household", new { id = Model.id })" data-toggle="modal" data-target="#dataModal" data-backdrop="static" data-keyboard="false" class="btn btn-warning pull-right">Edit Categories</a>
+        <a href="@Url.Action("AddTransaction","Household", new { id = Model.id })" data-toggle="modal" data-target="#dataModal" class="btn btn-primary pull-right">Add Transaction</a>
+    </div>
+    <div class="panel-body">
+        @*<a href="@Url.Action("ReconcileAccount", "Household", new { id = Model.id })" class="btn btn-default pull-right" data-target="#dataModal" data-toggle="modal">Reconcile Account</a>*@
+        <table id="t-table" class="table table-bordered table-condensed table-striped">
+            <thead>
+                <tr>
+                    <th>Member</th>
+                    <th>Description</th>
+                    <th>Posted Date</th>
+                    <th>Transaction Date</th>
+                    <th>Category</th>
+                    <th>Credit</th>
+                    <th>Debit</th>
+                    <th>Reconciled</th>
+                    <th>Status</th>
+                    <th>Balance</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model.Transactions.Count > 0)
+            {
+                foreach (var entry in Model.Transactions.Where(u => u.isDeleted == false).Reverse())
+                {
+                    if (entry.Void == true)
+                    {
+                        ViewBag.Void = "void";
+                    }
+                    else
+                    {
+                        ViewBag.Void = "";
+                    }
+                    if (entry.Balance < 0 && entry.Void == false)
+                    {
+                        ViewBag.overdraft = "danger";
+                    }
+                    else
+                    {
+                        ViewBag.overdraft = "";
+                    }
+                    <tr class="@ViewBag.Void @ViewBag.overdraft">
+                        <td>@entry.Author.FirstName&nbsp;@entry.Author.LastName</td>
+                        <td>@entry.Description</td>
+                        <td>@entry.Created.ToString("d")</td>
+                        <td>@entry.TransactionDate.ToString("d")</td>
+                        <td>@entry.Category.Name</td>
+                        <td>
+                            @if (@entry.Category.Expense == false)
+                            {
+                                <text>+</text> @entry.Amount
+                            }
+                        </td>
+                        <td>
+                            @if (@entry.Category.Expense == true)
+                            {
+                                <text>-</text> @entry.Amount
+                            }
+                        </td>
+                        <td style="text-align:center">
+                            @if (@entry.Reconciled == true)
+                            {
+                                <i class="fa fa-check text"></i>
+                            }
+                        </td>
+                        <td style="text-align:center">
+                            @{
+                                if (entry.Void == true)
+                                {
+                                    <label class="label label-default">Voided</label>
+                                }
+                                else if (entry.Category.Name.Contains("Reconciliation") == true && entry.Void == false)
+                                {
+                                    <label class="label label-info">Reconciled</label>
+                                }
+                                else if (entry.Balance < 0 && entry.Void == false)
+                                {
+                                    <label class="label label-danger">Overdraft</label>
+                                }
+                            }
+                        </td>
+                        <td>
+                            @entry.Balance
+                        </td>
+                        <td>
+                            @if (entry.Void == false)
+                            {
+                                if ((entry.Reconciled == true && entry.RecTransactionId != null) || (entry.Description.Contains("Initial") && entry.Category.Name.Contains("Reconciliation")))
+                                {
+                                }
+                                else if (entry.Reconciled == true)
+                                {
+                                    <a href="@Url.Action("DeleteTransaction", "Household", new { entry.id })" data-toggle="modal" data-target="#dataModal" class="delete"><i class="fa fa-trash"></i></a>
+                                }
+                                else 
+                                {
+                                    <a href="@Url.Action("EditTransactions", "Household", new { entry.id })" data-toggle="modal" data-target="#dataModal"><i class="fa fa-edit"></i></a>
+                                    <a href="@Url.Action("VoidTransaction", "Household", new { entry.id })" data-toggle="modal" data-target="#dataModal"><i class="fa fa-ban"></i></a>
+                                    <a href="@Url.Action("ReconcileTransaction", "Household", new { entry.id })" data-toggle="modal" data-target="#dataModal"><i class="fa fa-money"></i></a>
+                                    <a href="@Url.Action("DeleteTransaction", "Household", new { entry.id })" data-toggle="modal" data-target="#dataModal" class="delete"><i class="fa fa-trash"></i></a>
+                                }
+                            }
+                            else 
+                            {
+                                <a href="@Url.Action("VoidTransaction", "Household", new { entry.id })" data-toggle="modal" data-target="#dataModal"><i class="fa fa-ban"></i></a>
+                                <a href="@Url.Action("DeleteTransaction", "Household", new { entry.id })" data-toggle="modal" data-target="#dataModal" class="delete"><i class="fa fa-trash"></i></a>
+                            }
+                        </td>
+                    </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td>No transactions made.</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                        }
+            </tbody>
+        </table>
+    </div>
+</div>
+    <script>
+        $('#t-table').DataTable({
+            "bSort": false,
+            "destroy": true,
+            "paging": true,
+            "lengthChange": false,
+            "searching": false,
+            //"ordering": true,
+            "info": true,
+            "autoWidth": false
+        });
+    </script>

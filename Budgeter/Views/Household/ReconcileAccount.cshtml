@@ -1,0 +1,71 @@
+﻿@model Budgeter.Models.Account
+
+@{
+    Layout = null;
+}
+
+<div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+    <h4 class="modal-title" id="myModalLabel"><i class="fa fa-credit-card"></i> Reconcile Account </h4>
+</div>
+<div class="modal-body">
+    <table id="eTable" class="table table-bordered table-condensed table-striped">
+        <thead>
+            <tr>
+                <th class="col-xs-6">Account</th>
+                <th class="col-xs-6">Amount</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>@Html.DropDownList("AccountId", ViewBag.accountlist as SelectList, new { @class="form-control" })</td>
+                <td>
+                    <div class="input-group">
+                        <span class="input-group-addon"><i class="glyphicon glyphicon-usd"></i></span>
+                        <input type="number" class="form-control" step="0.01" min="0" name="ReconcileAmount" placeholder="0.00" required>
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+<div class="modal-footer">
+    <button id="table-submit2" class="btn btn-primary pull-right" data-id="@ViewBag.householdid" data-aid="@ViewBag.accountid">Submit</button>
+    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+</div>
+
+<script>
+    $('#table-submit2').on("click", function () {
+        debugger;
+        var id = $(this).attr("data-id");
+        var aid = $(this).attr("data-aid");
+        var transaction = {
+            AccountId: $("#AccountId").val(),
+            Amount: $("input[name=ReconcileAmount]").val()
+        };
+
+        $.ajax({
+            type: "POST",
+            url: "/Household/ReconcileAccount/" + id,
+            data: transaction,
+            success: function (data) {
+                debugger;
+                if (data.success == false) {
+                    alert(data.errorMessage);
+                }
+                else {
+                    debugger;
+                    $('#loadtransactions').load('/Household/LoadTransactions/' + aid, function () {
+                        $('#dataModal').modal('hide');
+                    });
+                    $('div#loadaccount').load('/Household/LoadAccounts/' + id, function () {
+                        $('#displayModal').modal('hide');
+                    });
+                }
+            },
+            error: function () {
+                alert("Post action failed");
+            }
+        });
+    });
+</script>

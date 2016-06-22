@@ -1,0 +1,34 @@
+﻿@model IEnumerable<Budgeter.Models.Account>
+
+@{
+    ViewBag.Title = "Index";
+}
+
+
+<div id="MyChart">
+
+</div>
+
+@section scripts {
+<script src="//cdnjs.cloudflare.com/ajax/libs/raphael/2.1.0/raphael-min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/morris.js/0.5.1/morris.min.js"></script>
+<script>
+    var chartData;
+    $.post('@Url.Action("GetChart","Home")').then(function (response){
+        new Morris.Donut({
+            element: 'MyChart',
+        data: response
+        });
+        chartData = response;
+    });
+
+    $(window).on('resize', function () {
+        debugger;
+        $('#MyChart').empty();
+            new Morris.Donut({
+                element: 'MyChart',
+                data: chartData
+            });
+    });
+</script>
+}

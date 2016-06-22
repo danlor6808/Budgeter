@@ -1,0 +1,77 @@
+﻿@model Budgeter.Models.Account
+
+<div class="tab-content">
+    <div class="tab-pane fade in active" id="budgetExpense_chart">
+        <h4 class="text-center">Monthly Account Budget</h4>
+        @if (ViewBag.budgetmsg == true)
+        {
+            <div id="chartMsg" class="alert alert-warning" role="alert">
+                <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+                <span class="sr-only">Note:</span>
+                There are currently no budgets made for this account.
+            </div>
+            <div id="chart" style="display:none">
+            </div>
+        }
+        else
+        {
+            <div id="chart" style="height:400px">
+            </div>
+        }
+        </div>
+    <div class="tab-pane fade in" id="budgetIncome_chart">
+        <h4 class="text-center">Monthly Account Income</h4>
+        @if (ViewBag.budgetmsg == true)
+        {
+            <div id="chartMsg2" class="alert alert-warning" role="alert">
+                <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+                <span class="sr-only">Note:</span>
+                There are currently no budgets made for this account.
+            </div>
+            <div id="chart2" style="display:none">
+            </div>
+        }
+        else
+        {
+            <div id="chart2" style="height:400px">
+            </div>
+        }
+
+    </div>
+</div>
+<script>
+        $.post('@Url.Action("GetAccountBarChart", "Home", new { id = Model.id })').then(function (response) {
+            debugger;
+            data = response;
+            barChart = Morris.Bar({
+                element: 'chart',
+                data: response[0].data,
+                xkey: 'name',
+                ykeys: ['total', 'baseAmount', 'leftover'],
+                labels: ['Total Amount Spent', 'Budgeted Amount', 'Leftover'],
+                xLabelMargin: 10,
+                hideHover: true,
+                preUnits: '$',
+                postUnits: '.00',
+                barColors: ['#d9534f', '#777', '#f0ad4e']
+            });
+
+            barChart2 = Morris.Bar({
+                element: 'chart2',
+                data: response[0].data2,
+                xkey: 'name',
+                ykeys: ['total', 'baseAmount', 'leftover'],
+                labels: ['Collected', 'Goal', 'Left to go'],
+                xLabelMargin: 10,
+                hideHover: true,
+                preUnits: '$',
+                postUnits: '.00',
+                barColors: ['#5cb85c', '#5bc0de', '#337ab7']
+            });
+        });
+
+        $(window).on('resize', function () {
+            barChart.setData(data[0].data);
+            barChart2.setData(data[0].data2);
+        });
+    </script>

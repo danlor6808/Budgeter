@@ -1,0 +1,176 @@
+﻿@{ 
+    var num = 1;
+}
+<table id="category" class="table table-bordered table-condensed table-striped">
+    <thead>
+        <tr>
+            <th class="col-xs-2">Category Name</th>
+            <th class="col-xs-2">Income</th>
+            <th class="col-xs-2">Expense</th>
+            <th class="col-xs-2">Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+
+        @foreach (var category in Model)
+            {
+
+            <tr data-id="@category.id">
+                <td data-map="Name">
+                    @category.Name
+                </td>
+                <td data-map="Expense" style="text-align:center">
+                    @if (!category.Expense)
+                    {
+                        <input class="disabled" name="Expense-@num" type="radio" value="false" checked="checked" disabled="disabled" />
+                    }
+                    else
+                    {
+                        <input class="disabled" name="Expense-@num" type="radio" value="false" disabled="disabled" />
+                    }
+                </td>
+                <td data-map="Expense" style="text-align:center">
+
+                    @if (category.Expense)
+                    {
+                        <input class="disabled" name="Expense-@num" type="radio" value="true" checked="checked" disabled="disabled" />
+                    }
+                    else
+                    {
+                        <input class="disabled" name="Expense-@num" type="radio" value="true" disabled="disabled" />
+                    }
+                </td>
+                <td>
+                    <a href="" class="edit" data-category="@category.id"><i class="fa fa-edit"></i></a>
+                    <a href="" class="save hide" data-category="@category.id"><i class="fa fa-save"></i></a>
+                    <a href="@Url.Action("DeleteCategory","Household", new { id = @category.id })" data-toggle="modal" data-category="@category.id" data-target="#confirmModal" data-backdrop="static"><i class="fa fa-trash"></i></a>
+                </td>
+            </tr>
+            num++;
+        }
+    </tbody>
+</table>
+
+<script>
+    var newTr = $('#category').find('tr').length;
+    //Add Category Button
+    $('.addCategory').off().on("click", function () {
+        debugger;
+        $('#category > tbody:last').append('<tr data-category="new-' + newTr + '" class="info"><td data-map="Name" contenteditable="true">Category Name</td><td data-map="Expense" style="text-align:center"><input name="Expense-' + newTr + '" type="radio" value="false" checked="checked"/></td><td data-map="Expense" style="text-align:center"><input name="Expense-' + newTr + '" type="radio" value="true"/></td><td><a href="#" data-category="new-' + newTr + '" class="add" ><i class="fa fa-save"></i></a> <a href="#" data-category="new-' + newTr + '" class="cancel" ><i class="fa fa-ban"></i></a></td></tr>');
+        newTr++;
+    });
+
+    //Add Button
+    $(document).off("click",".add").on("click", ".add", function () {
+        debugger;
+        event.preventDefault();
+        var cat = $(this).attr("data-category");
+        var i = $('tr[data-category="' + cat + '"]').children('td').children('input').attr('name');
+        var Category = {
+            Name: $('tr[data-category="' + cat + '"]').find('td[data-map="Name"]').html().replace(/\s+/g, " "),
+            Expense: $('input[name="' + i + '"]:checked').val(),
+            AccountId: $("input[name=aid]").val()
+        };
+        addCategory(Category);
+    });
+
+    //Add Button
+    $(document).off("click", ".cancel").on("click", ".cancel", function () {
+        debugger;
+        event.preventDefault();
+        $(this).closest("tr").remove();
+    });
+
+
+     //Edit Button
+    $('.edit').on("click", function () {
+        debugger;
+        event.preventDefault();
+        var id = $(this).attr("data-category");
+        $('a[data-category="' + id + '"]').toggleClass("hide");
+        $('tr[data-id="' + id + '"]').children("td").each(function () {
+            $(this).toggleClass('info');
+            if ($(this).attr('data-map') == 'Name') {
+                $(this).prop('contenteditable', true);
+            }
+            if ($(this).attr('data-map') == 'Expense') {
+                $(this).find('input[type="radio"]').removeClass('disabled').prop('disabled', false);
+            }
+        });
+    });
+
+    //save Button
+    $('.save').on("click", function () {
+        debugger;
+        event.preventDefault();
+        var id = $(this).attr("data-category");
+        $('a[data-category="' + id + '"]').toggleClass("hide");
+        $('tr[data-id="' + id + '"]').children("td").each(function () {
+            $(this).toggleClass('info');
+            if ($(this).attr('data-map') == 'Name') {
+                $(this).prop('contenteditable', false);
+            }
+            if ($(this).attr('data-map') == 'Expense') {
+                n = $(this).children('input').attr('name');
+                $(this).find('input[type="radio"]').addClass('disabled').prop('disabled', true);
+            }
+        });
+        saveChanges(id, n);
+    });
+
+    //e = category id
+    //Function for submitting saved changes
+    saveChanges = function (e, i) {
+        var Category = {
+            id: e,
+            Name: $('tr[data-id="' + e + '"]').find('td[data-map="Name"]').html().replace(/\s+/g, " "),
+            Expense: $('input[name="' + i + '"]:checked').val(),
+            AccountId: $("input[name=aid]").val()
+        };
+        $.ajax({
+            type: "POST",
+            url: "/Household/EditCategory/" + Category.AccountId,
+            data: Category,
+            success: function (data) {
+                debugger;
+                if (data.success == false) {
+                    $('.Msg-danger').text(data.errorMessage);
+                }
+                else {
+                    debugger;
+                    $('#loadtransactions').load('/Household/LoadTransactions/' + Category.AccountId, function () {
+                    });
+                }
+            },
+            error: function () {
+                alert("Post action failed");
+                var test = "/Household/EditCategory/" + Category.AccountId;
+                alert(test);
+            }
+        });
+    };
+
+    addCategory = function (object) {
+        $.ajax({
+            type: "POST",
+            url: "/Household/AddCategory/",
+            data: object,
+            success: function (data) {
+                debugger;
+                if (data.success == false) {
+                    $('.Msg-danger').text(data.errorMessage);
+                }
+                else {
+                    debugger;
+                    $('#loadTable').load('/Household/_LoadCategories/' + object.AccountId, function () {
+                    });
+                }
+            },
+            error: function () {
+                alert("Post action failed");
+                var test = "/Household/AddCategory/";
+                alert(test);
+            }
+        });
+    };
+</script>

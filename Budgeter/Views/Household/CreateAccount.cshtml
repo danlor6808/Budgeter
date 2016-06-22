@@ -1,0 +1,67 @@
+﻿@model Budgeter.Models.Household
+
+@{
+    Layout = null;
+}
+
+<div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+    <h4 class="modal-title" id="myModalLabel"><i class="fa fa-table"></i> @Model.Name : Add Account </h4>
+</div>
+<div class="modal-body">
+    <table class="table table-bordered table-condensed table-striped">
+        <thead>
+            <tr>
+                <th>Account Name</th>
+                <th>Balance</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><input type="text" class="form-control" name="Name" placeholder="Enter account name." required /></td>
+                <td><input type="number" class="form-control" step="0.01" min="0" name="Balance" placeholder="Enter account balance." required></td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+<div class="modal-footer">
+    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+    <button id="table-submit" class="btn btn-primary pull-right" data-id="@Model.id">Add</button>
+</div>
+
+<script>
+    //Click event for adding data to table
+    $('#table-submit').on("click", function () {
+        var id = $(this).attr("data-id");
+        var account = {
+            HouseholdId: id,
+            Name: $('input[name=Name]').val(),
+            Balance: $('input[name=Balance]').val()
+        };
+
+        $.ajax({
+            type: "POST",
+            url: "/Household/CreateAccount",
+            data: account,
+            success: function (data) {
+                debugger;
+                if (data.success == false) {
+                    alert(data.errorMessage);
+                }
+                else {
+                    $('div#loadaccount').load('/Household/LoadAccounts/' + id, function () {
+                        $.post('@Url.Action("GetBarChart", "Home")').then(function (response) {
+                            data = response;
+                            barChart.setData(response);
+                            $('#latestTransactions').load('/Household/_LatestTransactions/' + id);
+                        });
+                        $('#displayModal').modal('hide');
+                    });
+                }
+            },
+            error: function () {
+                alert("Post action failed");
+            }
+        });
+    });
+</script>

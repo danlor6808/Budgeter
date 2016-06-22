@@ -1,0 +1,116 @@
+﻿.profile-icon {
+    width: 200%!important;
+    height: auto!important;
+    position: relative;
+    top: -8px;
+    left: -11px;
+}
+
+select {
+    width: 100%;
+}
+
+#tabletoggle {
+    margin-bottom: 15px;
+}
+
+#tdate {
+    line-height:inherit;
+}
+
+.load {
+    display:    none;
+    position:   fixed;
+    z-index:    2000;
+    top:        0;
+    left:       0;
+    height:     100%;
+    width:      100%;
+    background: rgba( 255, 255, 255, .7 ) 
+                url('../img/cube.gif')
+                50% 50% 
+                no-repeat;
+    transition: all 0.5s ease;
+}
+
+/* When the body has the loading class, we turn
+   the scrollbar off with overflow:hidden */
+body.loading {
+    overflow: hidden;   
+}
+
+/* Anytime the body has the loading class, our
+   modal element will be visible */
+body.loading .load {
+    display: block;
+}
+
+.void {
+    color:#b3b3b3;
+}
+
+.fa-3x {
+  vertical-align: middle;
+}
+
+.hide {
+    display:none
+
+}
+
+.modal-open[style="padding-right: 17px;"] .navbar-fixed-top,
+.modal-open[style="padding-right: 17px;"] .navbar-fixed-bottom {
+padding-right: 17px;
+}
+
+.dl-horizontal dt {
+    width: inherit;
+}
+
+.dl-horizontal dd {
+    margin-left: 100px !important;
+}
+
+.display-center {
+      display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.expenseRadio
+{
+    padding-left: 0px !important;
+    padding-right: 20px;
+}
+
+.nav > li > a {
+padding: 5px 15px;
+}
+
+svg{
+  width: 100% !important;
+  height: 100%!important;
+}
+
+.centered {
+    margin: 0 auto;
+}
+.rotate {
+    animation: wobble 1s infinite;
+    animation-direction:alternate-reverse;
+    -webkit-transition: all ease-in-out 0.3s;
+    -moz-transition: all ease-in-out 0.3s;
+    -ms-transition: all ease-in-out 0.3s;
+    -o-transition: all ease-in-out 0.3s;
+    transition: all ease-in-out 0.3s;
+}
+
+
+@keyframes wobble {
+  0% {
+    transform: rotate(20deg);
+  }
+  100% {
+    transform: rotate(-20deg);
+  }
+}
