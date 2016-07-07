@@ -15,17 +15,17 @@
         <table id="t-table" class="table table-bordered table-condensed table-striped">
             <thead>
                 <tr>
-                    <th>Member</th>
-                    <th>Description</th>
-                    <th>Posted Date</th>
-                    <th>Transaction Date</th>
-                    <th>Category</th>
-                    <th>Credit</th>
-                    <th>Debit</th>
-                    <th>Reconciled</th>
-                    <th>Status</th>
-                    <th>Balance</th>
-                    <th>Actions</th>
+                    <th class="col-lg-1 text-center">Member</th>
+                    <th class="col-lg-2 text-center">Description</th>
+                    <th class="col-lg-1 text-center">Posted</th>
+                    <th class="col-lg-1 text-center">Transaction</th>
+                    <th class="col-lg-1 text-center">Category</th>
+                    <th class="col-lg-1 text-center">Credit</th>
+                    <th class="col-lg-1 text-center">Debit</th>
+                    <th class="col-lg-1 text-center">Reconciled</th>
+                    <th class="col-lg-1 text-center">Status</th>
+                    <th class="col-lg-1 text-center">Balance</th>
+                    <th class="col-lg-1 text-center">Actions</th>
                 </tr>
             </thead>
             <tbody>
@@ -50,30 +50,30 @@
                         ViewBag.overdraft = "";
                     }
                     <tr class="@ViewBag.Void @ViewBag.overdraft">
-                        <td>@entry.Author.FirstName&nbsp;@entry.Author.LastName</td>
-                        <td>@entry.Description</td>
-                        <td>@entry.Created.ToString("d")</td>
-                        <td>@entry.TransactionDate.ToString("d")</td>
-                        <td>@entry.Category.Name</td>
-                        <td>
+                        <td><img src="@entry.Author.Icon" class="img-responsive img-circle centered" style="width:50%;" data-toggle="tooltip" title="@entry.Author.FirstName @entry.Author.LastName"/></td>
+                        <td class="text-center" style="vertical-align: middle">@entry.Description</td>
+                        <td class="text-center" style="vertical-align: middle">@entry.Created.ToString("d")</td>
+                        <td class="text-center" style="vertical-align: middle">@entry.TransactionDate.ToString("d")</td>
+                        <td class="text-center" style="vertical-align: middle">@entry.Category.Name</td>
+                        <td class="text-center" style="vertical-align: middle">
                             @if (@entry.Category.Expense == false)
                             {
                                 <text>+</text> @entry.Amount
                             }
                         </td>
-                        <td>
+                        <td class="text-center" style="vertical-align: middle">
                             @if (@entry.Category.Expense == true)
                             {
                                 <text>-</text> @entry.Amount
                             }
                         </td>
-                        <td style="text-align:center">
+                        <td class="text-center" style="vertical-align: middle">
                             @if (@entry.Reconciled == true)
                             {
                                 <i class="fa fa-check text"></i>
                             }
                         </td>
-                        <td style="text-align:center">
+                        <td class="text-center" style="vertical-align: middle">
                             @{
                                 if (entry.Void == true)
                                 {
@@ -89,10 +89,10 @@
                                 }
                             }
                         </td>
-                        <td>
+                        <td class="text-center" style="vertical-align: middle">
                             @entry.Balance
                         </td>
-                        <td>
+                        <td class="text-center" style="vertical-align: middle">
                             @if (entry.Void == false)
                             {
                                 if ((entry.Reconciled == true && entry.RecTransactionId != null) || (entry.Description.Contains("Initial") && entry.Category.Name.Contains("Reconciliation")))
@@ -121,7 +121,7 @@
                         }
                         else
                         {
-                            <tr>
+                            <tr class="text-center" style="vertical-align: middle">
                                 <td>No transactions made.</td>
                                 <td></td>
                                 <td></td>
@@ -140,6 +140,9 @@
     </div>
 </div>
     <script>
+        $(document).ready(function () {
+            $('[data-toggle=tooltip]').tooltip();
+        });
         $('#t-table').DataTable({
             "bSort": false,
             "destroy": true,

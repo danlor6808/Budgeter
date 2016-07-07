@@ -16,10 +16,10 @@
         <div class="panel-heading text-center">
             <ul class="nav nav-pills">
                 <li class="active">
-                    <a href="#budgetExpense" data-toggle="tab" data-target="#budgetExpense, #budgetExpense_chart"><i class="fa fa-bar-chart"></i></a>
+                    <a href="#budgetExpense" data-toggle="tab" data-target="#budgetExpense, #budgetExpense_chart"><i class="fa fa-bar-chart"></i> Budget Expenses</a>
                 </li>
                 <li class="">
-                    <a href="#budgetIncome" data-toggle="tab" data-target="#budgetIncome, #budgetIncome_chart"><i class="fa fa-bar-chart-o"></i></a>
+                    <a href="#budgetIncome" data-toggle="tab" data-target="#budgetIncome, #budgetIncome_chart"><i class="fa fa-bar-chart-o"></i> Budget Income</a>
                 </li>
             </ul>
         </div>
@@ -35,6 +35,8 @@
 <div class="col-md-8">
     <div class="panel panel-default">
         <div class="panel-heading text-center">
+            <a href="#" class="pull-left subMonth"><i class="fa fa-chevron-circle-left"></i> Last Month</a>
+            <a href="#" class="pull-right addMonth"><i class="fa fa-chevron-circle-right"></i> Next Month</a>
             Account Overview
         </div>
         <div class="panel-body">
@@ -79,6 +81,8 @@
 <script src="~/assets/js/bootstrap-notify.min.js"></script>
 <script>
     $(function () {
+        var currentMonth = localStorage.getItem("currentMonth");
+
         $('#t-table').DataTable({
             "bSort":false,
             "paging": true,
@@ -94,7 +98,7 @@
 
         $(document).on("change", "input[name=Amount]", function () {
             var v = $(this).val(),
-                t = parseInt(v, 10),
+                t = parseFloat(v, 10).toFixed(2),
                 b = isNaN(t);
             if (b) {
                 $(this).val('');
@@ -122,32 +126,34 @@
             data = response;
             barChart = Morris.Bar({
                 element: 'chart',
-                data: response[0].data,
+                data: response[0].data[currentMonth],
                 xkey: 'name',
                 ykeys: ['total', 'baseAmount', 'leftover'],
                 labels: ['Total Amount Spent', 'Budgeted Amount', 'Leftover'],
                 xLabelMargin: 10,
                 hideHover: true,
                 preUnits: '$',
-                postUnits: '.00'
+                postUnits: '.00',
+                barColors: ['#d9534f', '#777', '#f0ad4e']
             });
 
             barChart2 = Morris.Bar({
                 element: 'chart2',
-                data: response[0].data2,
+                data: response[0].data2[currentMonth],
                 xkey: 'name',
                 ykeys: ['total', 'baseAmount', 'leftover'],
                 labels: ['Collected', 'Goal', 'Left to go'],
                 xLabelMargin: 10,
                 hideHover: true,
                 preUnits: '$',
-                postUnits: '.00'
+                postUnits: '.00',
+                barColors: ['#5cb85c', '#5bc0de', '#337ab7']
             });
         });
 
         $(window).on('resize', function () {
-            barChart.setData(data[0].data);
-            barChart2.setData(data[0].data2);
+            barChart.setData(data[0].data[currentMonth]);
+            barChart2.setData(data[0].data2[currentMonth]);
         });
 
         $('ul.nav a').on('shown.bs.tab', function (e) {
@@ -182,6 +188,51 @@
                 type: 'danger'
             });
         }
+
+        function GetMonthName(monthNumber) {
+            var months = ['January', 'February', 'March', 'April', 'May', 'June',
+            'July', 'August', 'September', 'October', 'November', 'December'];
+            return months[monthNumber];
+        }
+        $('.month-name').text(GetMonthName(currentMonth));
+
+        $('.subMonth').on('click', function () {
+            event.preventDefault();
+            var m = currentMonth - 1;
+            if (m < 0)
+            {
+                currentMonth = 11
+            }
+            else
+            {
+                currentMonth = m;
+            }
+            barChart.setData(data[0].data[currentMonth]);
+            barChart2.setData(data[0].data2[currentMonth]);
+            $('.month-name').text(GetMonthName(currentMonth));
+            $('#loadDetails').load('/Household/_loadDetails/' + @Model.id + '?month=' + currentMonth, function () {
+                $('#loadAccountBudget').load('/Household/_loadAccountBudget/' + @Model.id + '?month=' + currentMonth, function () {});
+            });
+            localStorage.setItem("currentMonth", currentMonth);
+        });
+
+        $('.addMonth').on('click', function () {
+            event.preventDefault();
+            var m = parseInt(currentMonth) + 1;
+            if (m > 11) {
+                currentMonth = 0
+            }
+            else {
+                currentMonth = m;
+            }
+            barChart.setData(data[0].data[currentMonth]);
+            barChart2.setData(data[0].data2[currentMonth]);
+            $('.month-name').text(GetMonthName(currentMonth));
+            $('#loadDetails').load('/Household/_loadDetails/' + @Model.id + '?month=' + currentMonth, function () {
+                $('#loadAccountBudget').load('/Household/_loadAccountBudget/' + @Model.id + '?month=' + currentMonth, function () {});
+            });
+            localStorage.setItem("currentMonth", currentMonth);
+        });
     });
 </script>
     @if (Model.Balance < 0)

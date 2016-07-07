@@ -3,15 +3,15 @@
 <table id="t-table" class="table table-bordered table-condensed table-striped">
     <thead>
         <tr>
-            <th>Account</th>
-            <th>Description</th>
-            <th>Posted Date</th>
-            <th>Transaction Date</th>
-            <th>Category</th>
-            <th>Credit</th>
-            <th>Debit</th>
-            <th>Reconciled</th>
-            <th>Status</th>
+            <th class="text-center">Account</th>
+            <th class="text-center">Description</th>
+            <th class="text-center">Posted</th>
+            <th class="text-center">Transaction</th>
+            <th class="text-center">Category</th>
+            <th class="text-center">Credit</th>
+            <th class="text-center">Debit</th>
+            <th class="text-center">Reconciled</th>
+            <th class="text-center">Status</th>
         </tr>
     </thead>
     <tbody>
@@ -35,8 +35,8 @@
                     {
                         ViewBag.overdraft = "";
                     }
-                    <tr class="@ViewBag.Void @ViewBag.overdraft">
-                        <td>@entry.Account.Name</td>
+                    <tr class="@ViewBag.Void @ViewBag.overdraft text-center">
+                        <td><a href="@Url.Action("Transactions", "Household", new { id = entry.AccountId })">@entry.Account.Name</a></td>
                         <td>@entry.Description</td>
                         <td>@entry.Created.ToString("d")</td>
                         <td>@entry.TransactionDate.ToString("d")</td>

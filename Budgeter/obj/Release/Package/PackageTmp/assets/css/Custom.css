@@ -105,7 +105,46 @@ svg{
     transition: all ease-in-out 0.3s;
 }
 
+.navbar-header {
+    float:none;
+    margin: 0 auto;
+}
 
+.navbar-brand {
+    margin: 0 auto;
+}
+
+.header-img {
+    display: block;
+    margin: 0 auto;
+    width:25%; 
+}
+
+.navbar.shrink {
+  height: 0px;
+}
+
+.tech {
+    width:20%; 
+    height:auto;
+}
+
+.triple {
+        width:30%; 
+}
+
+.img-main {
+    vertical-align: middle;
+    margin: 0 auto;
+}
+
+.padding {
+    padding-bottom:8em;
+}
+
+menu-section {
+    z-index: 200;
+}
 @keyframes wobble {
   0% {
     transform: rotate(20deg);

@@ -9,16 +9,16 @@
 <table class="table table-bordered table-condensed table-striped">
     <thead>
         <tr>
-            <th class="col-sm-4">
+            <th class="col-sm-4 text-center">
                 Budget
             </th>
-            <th class="col-sm-3">
+            <th class="col-sm-3 text-center">
                 Amount
             </th>
-            <th class="col-sm-3">
+            <th class="col-sm-3 text-center">
                 Share
             </th>
-            <th class="col-sm-2">
+            <th class="col-sm-2 text-center">
                 Action
             </th>
         </tr>
@@ -37,7 +37,7 @@
             {
                 ViewBag.neg = "danger";
             }
-            <tr class="ViewBag.neg">
+            <tr class="@ViewBag.neg text-center">
                 <td>
                     @n.Description
                 </td>

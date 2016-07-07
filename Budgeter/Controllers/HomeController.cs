@@ -17,13 +17,19 @@ namespace Budgeter.Controllers
 {
 
     [RequireHttps]
-    [Authorize]
     public class HomeController : MyBaseController
     {
         private ApplicationDbContext db = new ApplicationDbContext();
         public ActionResult Index()
         {
-            return RedirectToAction("Index","Household");
+            if (User.Identity.IsAuthenticated)
+            {
+                return RedirectToAction("Index", "Household");
+            }
+            else
+            {
+                return View("Index");
+            }
         }
 
         public ActionResult GetChart(int? id)
@@ -79,13 +85,6 @@ namespace Budgeter.Controllers
                     }
                 }
 
-                //object[] data3 = new object[12];
-                //for (var i = 0; i < 12;i++)
-                //{
-                //    data3[i] = new { month = CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(i + 1), income = data[i], expense = data2[i] };
-                //    i++;
-                //}
-
                 object[] model = new object[1];
                 model[0] = new { data, data2 };
                 return Content(JsonConvert.SerializeObject(model), "application/json");
@@ -134,47 +133,62 @@ namespace Budgeter.Controllers
             //Goes through each account budget 
             if (account.AccountBudget.Any())
             {
-                object[] data = new object[account.AccountBudget.Where(u => u.Expense == true).Count()];
-                foreach (var n in account.AccountBudget.Where(u => u.Expense == true))
+                //object[] data = new object[account.AccountBudget.Where(u => u.Expense == true).Count()];
+                object[] data = new object[12];
+                var month = new List<object>();
+                for (int b = 0; b < 12; b++)
                 {
-                    decimal accountBudgetSum = 0;
-                    //list of categories that have been assigned to current account budget
-                    var categorylist = db.Categories.Where(u => u.AccountBudgetId == n.id).ToList();
-                    //goes through each category and gets the budget sum of each
-                    foreach (var i in categorylist)
+                    foreach (var n in account.AccountBudget.Where(u => u.Expense == true))
                     {
-                        var categorySum = account.Transactions.Where(u => u.CategoryId == i.id && u.isDeleted == false && u.Void == false && u.TransactionDate.Month == DateTime.Now.Month && u.Category.Expense == true).Sum(t => t.Amount);
-                        var categoryEx = account.Transactions.Where(u => u.CategoryId == i.id && u.isDeleted == false && u.Void == false && u.TransactionDate.Month == DateTime.Now.Month && u.Category.Expense == false).Sum(t => t.Amount);
-                        accountBudgetSum += categorySum;
-                        accountBudgetSum -= categoryEx;
+                        decimal accountBudgetSum = 0;
+                        //list of categories that have been assigned to current account budget
+                        var categorylist = db.Categories.Where(u => u.AccountBudgetId == n.id).ToList();
+                        //goes through each category and gets the budget sum of each
+
+                        foreach (var i in categorylist)
+                        {
+                            var categorySum = account.Transactions.Where(u => u.CategoryId == i.id && u.isDeleted == false && u.Void == false && u.TransactionDate.Month == b+1 && u.Category.Expense == true).Sum(t => t.Amount);
+                            var categoryEx = account.Transactions.Where(u => u.CategoryId == i.id && u.isDeleted == false && u.Void == false && u.TransactionDate.Month == b+1 && u.Category.Expense == false).Sum(t => t.Amount);
+                            accountBudgetSum += categorySum;
+                            accountBudgetSum -= categoryEx;
+                        }
+                        decimal leftover = n.Amount - accountBudgetSum;
+                        month.Add(new { name = n.Description, total = accountBudgetSum, baseAmount = n.Amount, leftover = leftover, });
+                        accountBudgetSum = 0;
                     }
-                    decimal leftover = n.Amount - accountBudgetSum;
-                    data[counter] = new { name = n.Description, total = accountBudgetSum, baseAmount = n.Amount, leftover = leftover, };
+                    data[counter] = month.ToArray();
                     counter++;
+                    month.Clear();
                 }
 
                 counter = 0;
-                object[] data2 = new object[account.AccountBudget.Where(u => u.Expense == false).Count()];
-                foreach (var n in account.AccountBudget.Where(u => u.Expense == false))
+                object[] data2 = new object[12];
+                for (int b = 0; b < 12; b++)
                 {
-                    decimal accountBudgetSum = 0;
-                    //list of categories that have been assigned to current account budget
-                    var categorylist = db.Categories.Where(u => u.AccountBudgetId == n.id).ToList();
-                    //goes through each category and gets the budget sum of each
-                    foreach (var i in categorylist)
+                    foreach (var n in account.AccountBudget.Where(u => u.Expense == false))
                     {
-                        var categorySum = account.Transactions.Where(u => u.CategoryId == i.id && u.isDeleted == false && u.Void == false && u.TransactionDate.Month == DateTime.Now.Month && u.Category.Expense == true).Sum(t => t.Amount);
-                        var categoryEx = account.Transactions.Where(u => u.CategoryId == i.id && u.isDeleted == false && u.Void == false && u.TransactionDate.Month == DateTime.Now.Month && u.Category.Expense == false).Sum(t => t.Amount);
-                        accountBudgetSum -= categorySum;
-                        accountBudgetSum += categoryEx;
+                        decimal accountBudgetSum = 0;
+                        //list of categories that have been assigned to current account budget
+                        var categorylist = db.Categories.Where(u => u.AccountBudgetId == n.id).ToList();
+                        //goes through each category and gets the budget sum of each
+                        foreach (var i in categorylist)
+                        {
+                            var categorySum = account.Transactions.Where(u => u.CategoryId == i.id && u.isDeleted == false && u.Void == false && u.TransactionDate.Month == b+1 && u.Category.Expense == true).Sum(t => t.Amount);
+                            var categoryEx = account.Transactions.Where(u => u.CategoryId == i.id && u.isDeleted == false && u.Void == false && u.TransactionDate.Month == b+1 && u.Category.Expense == false).Sum(t => t.Amount);
+                            accountBudgetSum -= categorySum;
+                            accountBudgetSum += categoryEx;
+                        }
+                        decimal leftover = n.Amount - accountBudgetSum;
+                        if (leftover <= 0)
+                        {
+                            leftover = 0;
+                        }
+                        month.Add(new { name = n.Description, total = accountBudgetSum, baseAmount = n.Amount, leftover = leftover});
+                        accountBudgetSum = 0;
                     }
-                    decimal leftover = n.Amount - accountBudgetSum;
-                    if (leftover <= 0)
-                    {
-                        leftover = 0;
-                    }
-                    data2[counter] = new { name = n.Description, total = accountBudgetSum, baseAmount = n.Amount, leftover = leftover, };
+                    data2[counter] = month.ToArray();
                     counter++;
+                    month.Clear();
                 }
                 object[] model = new object[1];
                 model[0] = new { data, data2 };

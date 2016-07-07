@@ -1,31 +1,74 @@
 ﻿@{
-    ViewBag.Title = "Home Page";
+
 }
 
-<div class="jumbotron">
-    <h1>ASP.NET</h1>
-    <p class="lead">ASP.NET is a free web framework for building great Web sites and Web applications using HTML, CSS and JavaScript.</p>
-    <p><a href="http://asp.net" class="btn btn-primary btn-lg">Learn more &raquo;</a></p>
+<div class="col-lg-12">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 text-center">
+                <hr class="section-heading-spacer">
+                <div class="clearfix"></div>
+                <h2 class="section-heading"><strong>What Is HEM?</strong></h2>
+                <p class="lead">Home Expense Monitor (HEM) is an online financial management system designed to be used by you and members of your entire household. </p>
+                <img class="img-responsive img-main" src="~/assets/img/badges/house-01.jpg" alt="">
+            </div>
+        </div>
+    </div>
+    <!-- /.container -->
 </div>
 
-<div class="row">
-    <div class="col-md-4">
-        <h2>Getting started</h2>
-        <p>
-            ASP.NET MVC gives you a powerful, patterns-based way to build dynamic websites that
-            enables a clean separation of concerns and gives you full control over markup
-            for enjoyable, agile development.
-        </p>
-        <p><a class="btn btn-default" href="http://go.microsoft.com/fwlink/?LinkId=301865">Learn more &raquo;</a></p>
+<div>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 text-center">
+                <hr class="section-heading-spacer">
+                <div class="clearfix"></div>
+                <h2 class="section-heading"><strong>Take Control Of Your Income</strong></h2>
+                <p class="lead">Record, void, categorize, and reconcile transactions. Create and keep track of customizable budgets. Chart visualizations of account details are available</p>
+                <img class="img-responsive img-main" src="~/assets/img/badges/money-01.jpg" alt="">
+            </div>
+        </div>
+
     </div>
-    <div class="col-md-4">
-        <h2>Get more libraries</h2>
-        <p>NuGet is a free Visual Studio extension that makes it easy to add, remove, and update libraries and tools in Visual Studio projects.</p>
-        <p><a class="btn btn-default" href="http://go.microsoft.com/fwlink/?LinkId=301866">Learn more &raquo;</a></p>
-    </div>
-    <div class="col-md-4">
-        <h2>Web Hosting</h2>
-        <p>You can easily find a web hosting company that offers the right mix of features and price for your applications.</p>
-        <p><a class="btn btn-default" href="http://go.microsoft.com/fwlink/?LinkId=301867">Learn more &raquo;</a></p>
-    </div>
+    <!-- /.container -->
 </div>
+
+<div>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 text-center">
+                <hr class="section-heading-spacer">
+                <div class="clearfix"></div>
+                <h2 class="section-heading"><strong>Technologies Used</strong></h2>
+                <p class="lead">HEM was developed using the latest in web application technology</p>
+                <ul class="list-unstyled">
+                    <li>
+                        <img src="~/assets/img/badges/icon_html5-JS-CSS3.png" class="tech triple" />
+                        <img src="~/assets/img/badges/icon_visualstudio.png" class="tech" />
+                        <img src="~/assets/img/badges/icon_Sql.png" class="tech" />
+                        <img src="~/assets/img/badges/icon_.net.png" class="tech" />
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <!-- /.container -->
+</div>
+
+<div>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 text-center">
+                <hr class="section-heading-spacer">
+                <div class="clearfix"></div>
+                <h2 class="section-heading"><strong>Sign Up For Free!</strong></h2>
+                <p class="lead">HEM is developed to be 100% free, and used by anyone, anywhere, and anytime</p>
+                <a href="@Url.Action("Register","Account")" class="btn btn-primary btn-lg">Sign Up</a>
+            </div>
+        </div>
+
+    </div>
+    <!-- /.container -->
+</div>
+<div class="padding"></div>
+<br class="clearfix" />

@@ -266,6 +266,15 @@
     <Content Include="assets\css\material-design-iconic-font.min.css" />
     <Content Include="assets\css\style.css" />
     <Content Include="assets\img\64-64.jpg" />
+    <Content Include="assets\img\badges\house-01.jpg" />
+    <Content Include="assets\img\badges\icon_.net.png" />
+    <Content Include="assets\img\badges\icon_css3.png" />
+    <Content Include="assets\img\badges\icon_html5-JS-CSS3.png" />
+    <Content Include="assets\img\badges\icon_html5.png" />
+    <Content Include="assets\img\badges\icon_Sql.png" />
+    <Content Include="assets\img\badges\icon_visualstudio.png" />
+    <Content Include="assets\img\badges\logo_aspmvc345.png" />
+    <Content Include="assets\img\badges\money-01.jpg" />
     <Content Include="assets\img\clock.gif" />
     <Content Include="assets\img\cube.gif" />
     <Content Include="assets\img\logo.png" />
@@ -393,6 +402,7 @@
     <Content Include="assets\css\bootstrap-datepicker3.min.css.map" />
     <Content Include="assets\css\bootstrap-datepicker3.standalone.css.map" />
     <Content Include="assets\css\bootstrap-datepicker3.standalone.min.css.map" />
+    <Content Include="assets\img\logo.svg" />
     <None Include="Properties\PublishProfiles\dlorn-budget.pubxml" />
     <Content Include="README.md" />
     <None Include="Properties\PublishProfiles\dlorn-budget2.pubxml" />

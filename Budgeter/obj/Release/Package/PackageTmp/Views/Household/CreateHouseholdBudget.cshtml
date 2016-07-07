@@ -50,7 +50,7 @@
 <script>
     $(document).on("change", "input[name=Amount]", function () {
         var v = $(this).val(),
-            t = parseInt(v, 10),
+            t = parseFloat(v, 10).toFixed(2),
             b = isNaN(t);
         if (b) {
             $(this).val('');

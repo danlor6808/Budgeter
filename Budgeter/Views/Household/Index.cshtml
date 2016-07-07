@@ -112,9 +112,7 @@ else
                         <div class="tab-pane fade" id="profile">
                             <h4 class="text-center">Household Annual Expense</h4>
                             <div id="chart2" style="height: 300px">
-
                             </div>
-
                         </div>
                     </div>
                 </div>
@@ -227,22 +225,25 @@ else
             });
 
             $(window).on('resize', function () {
-                barChart2.setData(data[1].data2);
+                barChart2.setData(data[0].data2);
             });
 
         </script>
     }
 
-@if (Model.household.Accounts.Any(u => u.Balance < 0))
+    @if (Model.user.HouseholdId != null)
     {
-    <script>
-            $.notify({
-            // options
-            message: "Uh Oh! You have an account that is currently in overdraft."
-            }, {
-            // settings
-            type: 'danger'
-            });
-    </script>
-}
+        if (Model.household.Accounts.Any(u => u.Balance < 0))
+        { 
+        <script>
+                $.notify({
+                // options
+                message: "Uh Oh! You have an account that is currently in overdraft."
+                }, {
+                // settings
+                type: 'danger'
+                });
+        </script>
+        }
+    }
 }

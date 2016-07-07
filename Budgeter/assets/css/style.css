@@ -19,7 +19,7 @@
    GENERAL STYLES
  ============================================================ */
 
-@import url(http://fonts.googleapis.com/css?family=Roboto); /* FREE GOOGLE FONT */
+@import url(https://fonts.googleapis.com/css?family=Roboto); /* FREE GOOGLE FONT */
 
 body {
     font-family: 'Roboto', sans-serif;
@@ -191,7 +191,11 @@ header {
 }
 
 .navbar {
+    height:220px;
     margin-bottom: 0px;
+    overflow:hidden;
+   -webkit-transition: all 0.4s ease;
+   transition: all 0.4s ease;
 }
 /* =============================================================
    FOOTER SECTION STYLES

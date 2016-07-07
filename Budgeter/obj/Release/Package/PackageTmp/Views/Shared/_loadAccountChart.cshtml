@@ -2,7 +2,7 @@
 
 <div class="tab-content">
     <div class="tab-pane fade in active" id="budgetExpense_chart">
-        <h4 class="text-center">Monthly Account Budget</h4>
+        <h4 class="text-center"><span class="month-name"></span> Account Budget</h4>
         @if (ViewBag.budgetmsg == true)
         {
             <div id="chartMsg" class="alert alert-warning" role="alert">
@@ -20,7 +20,7 @@
         }
         </div>
     <div class="tab-pane fade in" id="budgetIncome_chart">
-        <h4 class="text-center">Monthly Account Income</h4>
+        <h4 class="text-center"><span class="month-name"></span> Account Income</h4>
         @if (ViewBag.budgetmsg == true)
         {
             <div id="chartMsg2" class="alert alert-warning" role="alert">
@@ -40,12 +40,19 @@
     </div>
 </div>
 <script>
+    if (currentMonth == null)
+    {
+        var d = new Date();
+        var currentMonth = d.getMonth();
+        localStorage.setItem("currentMonth", currentMonth);
+    }
+
         $.post('@Url.Action("GetAccountBarChart", "Home", new { id = Model.id })').then(function (response) {
             debugger;
             data = response;
             barChart = Morris.Bar({
                 element: 'chart',
-                data: response[0].data,
+                data: response[0].data[currentMonth],
                 xkey: 'name',
                 ykeys: ['total', 'baseAmount', 'leftover'],
                 labels: ['Total Amount Spent', 'Budgeted Amount', 'Leftover'],
@@ -53,23 +60,32 @@
                 hideHover: true,
                 preUnits: '$',
                 postUnits: '.00',
+                barColors: ['#d9534f', '#777', '#f0ad4e']
             });
 
             barChart2 = Morris.Bar({
                 element: 'chart2',
-                data: response[0].data2,
+                data: response[0].data2[currentMonth],
                 xkey: 'name',
                 ykeys: ['total', 'baseAmount', 'leftover'],
                 labels: ['Collected', 'Goal', 'Left to go'],
                 xLabelMargin: 10,
                 hideHover: true,
                 preUnits: '$',
-                postUnits: '.00'
+                postUnits: '.00',
+                barColors: ['#5cb85c', '#5bc0de', '#337ab7']
             });
         });
 
         $(window).on('resize', function () {
-            barChart.setData(data[0].data);
-            barChart2.setData(data[0].data2);
+            barChart.setData(data[0].data[currentMonth]);
+            barChart2.setData(data[0].data2[currentMonth]);
         });
+        function GetMonthName(monthNumber) {
+            var months = ['January', 'February', 'March', 'April', 'May', 'June',
+            'July', 'August', 'September', 'October', 'November', 'December'];
+            return months[monthNumber];
+        }
+
+        $('.month-name').text(GetMonthName(currentMonth));
     </script>

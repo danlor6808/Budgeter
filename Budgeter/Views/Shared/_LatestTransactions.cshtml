@@ -3,15 +3,16 @@
 <table id="t-table" class="table table-bordered table-condensed table-striped">
     <thead>
         <tr>
-            <th class="col-sm-2">Account</th>
-            <th class="col-sm-2">Description</th>
-            <th class="col-sm-1">Posted Date</th>
-            <th class="col-sm-1">Transaction Date</th>
-            <th class="col-sm-2">Category</th>
-            <th class="col-sm-1">Credit</th>
-            <th class="col-sm-1">Debit</th>
-            <th class="col-sm-1">Reconciled</th>
-            <th class="col-sm-1">Status</th>
+            <th class="col-sm-1"></th>
+            <th class="col-sm-2 text-center">Account</th>
+            <th class="col-sm-2 text-center">Description</th>
+            <th class="col-sm-1 text-center">Posted</th>
+            <th class="col-sm-1 text-center">Transaction</th>
+            <th class="col-sm-1 text-center">Category</th>
+            <th class="col-sm-1 text-center">Credit</th>
+            <th class="col-sm-1 text-center">Debit</th>
+            <th class="col-sm-1 text-center">Reconciled</th>
+            <th class="col-sm-1 text-center">Status</th>
         </tr>
     </thead>
     <tbody>
@@ -35,7 +36,8 @@
                     {
                         ViewBag.overdraft = "";
                     }
-                    <tr class="@ViewBag.Void @ViewBag.overdraft">
+                    <tr class="@ViewBag.Void @ViewBag.overdraft text-center">
+                        <td><img src="@entry.Author.Icon" class="img-responsive img-circle centered" style="width:50%;" data-toggle="tooltip" title="@entry.Author.FirstName @entry.Author.LastName" /></td>
                         <td><a href="@Url.Action("Transactions", "Household", new { id = entry.AccountId })">@entry.Account.Name</a></td>
                         <td>@entry.Description</td>
                         <td>@entry.Created.ToString("d")</td>

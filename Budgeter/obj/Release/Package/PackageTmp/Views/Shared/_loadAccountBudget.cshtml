@@ -11,16 +11,16 @@
             <table class="table table-bordered table-condensed table-striped">
                 <thead>
                     <tr>
-                        <th class="col-sm-7">
+                        <th class="col-sm-7 text-center">
                             Budget
                         </th>
-                        <th class="col-sm-3">
+                        <th class="col-sm-3 text-center">
                             Amount
                         </th>
                         <th>
                             Leftover
                         </th>
-                        <th class="col-sm-2">
+                        <th class="col-sm-2 text-center">
                             Action
                         </th>
                     </tr>
@@ -44,19 +44,19 @@
                         {
                             ViewBag.overbudget = "";
                         }
-                        <tr class="expensebudget @ViewBag.overbudget">
-                            <td>
+                        <tr class="expensebudget text-center @ViewBag.overbudget">
+                            <td class="text-center">
                                 @n.Description @if (expense < 0)
                                 { <text><span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span></text> }
                             </td>
-                            <td>
+                            <td class="text-center">
                                 $@n.Amount
                             </td>
-                            <td>
+                            <td class="text-center">
                                 @*@n.Leftover*@
                                 $@expense
                             </td>
-                            <td>
+                            <td class="text-center">
                                 <a href="@Url.Action("EditAccountBudget", "Household", new { id = n.id })" data-target="#dataModal" data-toggle="modal"><i class="fa fa-edit"></i></a>
                                 <a href="@Url.Action("DeleteAccountBudget", "Household", new { id = n.id })" data-target="#dataModal" data-toggle="modal"><i class="fa fa-trash"></i></a>
                             </td>
@@ -71,17 +71,17 @@
         {
             <table class="table table-bordered table-condensed table-striped">
                 <thead>
-                    <tr>
-                        <th class="col-sm-4">
+                    <tr class="text-center">
+                        <th class="col-sm-4 text-center">
                             Budget
                         </th>
-                        <th class="col-sm-3">
+                        <th class="col-sm-3 text-center">
                             Goal
                         </th>
-                        <th class="col-sm-3">
+                        <th class="col-sm-3 text-center">
                             Collected
                         </th>
-                        <th class="col-sm-2">
+                        <th class="col-sm-2 text-center">
                             Action
                         </th>
                     </tr>
@@ -109,17 +109,17 @@
                     {
                         ViewBag.goal = "";
                     }
-                    <tr class="incomebudget @ViewBag.goal">
-                        <td>
+                    <tr class="incomebudget text-center @ViewBag.goal">
+                        <td class="text-center">
                             @n.Description
                         </td>
-                        <td>
+                        <td class="text-center">
                             $@n.Amount
                         </td>
-                        <td>
+                        <td class="text-center">
                             $@income
                         </td>
-                        <td>
+                        <td class="text-center">
                             <a href="@Url.Action("EditAccountBudget", "Household", new { id = n.id })" data-target="#dataModal" data-toggle="modal"><i class="fa fa-edit"></i></a>
                             <a href="@Url.Action("DeleteAccountBudget", "Household", new { id = n.id })" data-target="#dataModal" data-toggle="modal"><i class="fa fa-trash"></i></a>
                         </td>

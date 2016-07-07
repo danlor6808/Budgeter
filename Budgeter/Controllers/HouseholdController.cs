@@ -862,12 +862,21 @@ namespace Budgeter.Controllers
             return PartialView("_Transactions", account);
         }
 
-        public ActionResult _loadDetails(int? id)
+        public ActionResult _loadDetails(int? id, int? month)
         {
             var account = db.Account.Find(id);
+            if (month != null)
+            {
+                ViewBag.expense = account.Transactions.Where(u => u.Category.Expense == true && u.Void == false && u.isDeleted == false && u.TransactionDate.Month == month+1).Sum(t => t.Amount);
+                ViewBag.income = account.Transactions.Where(u => u.Category.Expense == false && u.Void == false && u.isDeleted == false && u.TransactionDate.Month == month+1).Sum(t => t.Amount);
+                ViewBag.reconciled = account.Transactions.Where(u => u.Reconciled == true && u.Void == false && u.isDeleted == false && u.TransactionDate.Month == month+1).Sum(t => t.Amount);
+            }
+            else
+            {
             ViewBag.expense = account.Transactions.Where(u => u.Category.Expense == true && u.Void == false && u.isDeleted == false && u.TransactionDate.Month == DateTime.Now.Month).Sum(t => t.Amount);
             ViewBag.income = account.Transactions.Where(u => u.Category.Expense == false && u.Void == false && u.isDeleted == false && u.TransactionDate.Month == DateTime.Now.Month).Sum(t => t.Amount);
             ViewBag.reconciled = account.Transactions.Where(u => u.Reconciled == true && u.Void == false && u.isDeleted == false && u.TransactionDate.Month == DateTime.Now.Month).Sum(t => t.Amount);
+            }
             return PartialView("_loadDetails", account);
         }
 
@@ -1655,7 +1664,7 @@ namespace Budgeter.Controllers
             return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
         }
 
-        public ActionResult _loadAccountBudget(int? id)
+        public ActionResult _loadAccountBudget(int? id, int? month)
         {
             if (id != null)
             {
@@ -1669,11 +1678,23 @@ namespace Budgeter.Controllers
                         decimal Sum = 0;
                         foreach (var cat in budget.Category)
                         {
-                            var trans = db.Transaction.Where(u => u.CategoryId == cat.id && 
-                            u.isDeleted == false && 
-                            u.Void == false && 
-                            u.TransactionDate.Month == DateTime.Now.Month)                            
-                            .ToList();
+                            var trans = new List<Transactions>();
+                            if (month != null)
+                            {
+                                trans = db.Transaction.Where(u => u.CategoryId == cat.id &&
+                                u.isDeleted == false &&
+                                u.Void == false &&
+                                u.TransactionDate.Month == month+1)
+                                .ToList();
+                            }
+                            else
+                            {
+                                trans = db.Transaction.Where(u => u.CategoryId == cat.id &&
+                                u.isDeleted == false &&
+                                u.Void == false &&
+                                u.TransactionDate.Month == DateTime.Now.Month)
+                                .ToList();
+                            }
                             var childtrans = trans.Where(u => u.RecTransactionId != null).ToList();
                             foreach (var t in childtrans)
                             {
